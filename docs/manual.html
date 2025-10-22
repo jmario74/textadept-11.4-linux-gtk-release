@@ -1,0 +1,2645 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Textadept 11.4 nightly Manual</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="icon" href="icon.png" type="image/png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="content">
+      <div id="header">
+        <h1><img src="images/icon.png" alt="" /> Textadept</h1>
+        <ul>
+          <li><a href="index.html">Home</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/releases">Download</a> |</li>
+          <li><a href="book.html">Book</a> |</li>
+          <li><a href="manual.html">Manual</a> |</li>
+          <li><a href="api.html">API</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept">Source</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept-modules">Extra Modules</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/wiki">Wiki</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/discussions">Support</a></li>
+        </ul>
+      </div>
+      <div id="main">
+        <a name="Textadept-11.4-nightly-Manual"></a>
+<h2>Textadept 11.4 nightly Manual</h2>
+
+<p><strong>Contents</strong></p>
+
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#user-interface">User Interface</a></li>
+<li><a href="#working-with-files-and-projects">Working with Files and Projects</a></li>
+<li><a href="#adept-editing">Adept Editing</a></li>
+<li><a href="#compile-run-build-and-test">Compile, Run, Build, and Test</a></li>
+<li><a href="#modules">Modules</a></li>
+<li><a href="#themes">Themes</a></li>
+<li><a href="#scripting">Scripting</a></li>
+<li><a href="#compiling">Compiling</a></li>
+<li><a href="#appendix">Appendix</a></li>
+</ol>
+
+
+<hr />
+
+<a name="Introduction"></a>
+<h3>Introduction</h3>
+
+<hr />
+
+<a name="Overview"></a>
+<h4>Overview</h4>
+
+<p><img src="images/textadept.png" alt="Textadept" /></p>
+
+<p>Textadept is a fast, minimalist, and remarkably extensible cross-platform text editor for
+programmers. Written in a combination of C and <a href="https://www.lua.org">Lua</a> and relentlessly optimized for speed and
+minimalism over the last 12+ years, Textadept is an ideal editor for programmers who want endless
+extensibility without sacrificing speed and disk space, and without succumbing to code bloat and
+a superabundance of features. The application has both a graphical user interface (GUI) version
+that runs in a desktop environment, and a terminal version that runs within a terminal emulator.</p>
+
+<p>Textadept is <em>fast</em>. It starts up instantly and has a very responsive user interface. C code is
+about as fast as you can get, and Lua is widely regarded as being one of the fastest scripting
+languages available.</p>
+
+<p>Textadept is minimalist. Not only is this evident in the editor&rsquo;s appearance, but its C core
+is limited to around 2000 lines of code and its Lua extension code tries to avoid going beyond
+4000 lines. After more than 12 years of development, Textadept contains <a href="index.html#plots">roughly the same amount
+of code</a> since its inception while significantly improving year after year.</p>
+
+<p>Textadept is remarkably extensible. It was designed to be that way from the beginning; the editor&rsquo;s
+features came later. Most of Textadept&rsquo;s internals are written in Lua: syntax highlighting,
+opening and saving files, and search and replace, to name a few. Textadept gives you nearly
+complete control over the entire application using Lua. Capabilities like navigating within the
+editor, changing menus and key bindings on the fly, handling core events, and highlighting the
+syntax of new programming languages are possible. The editor&rsquo;s potential is seemingly limitless.</p>
+
+<p><img src="images/splitviews.png" alt="Split Views" /></p>
+
+<a name="About-This-Manual"></a>
+<h4>About This Manual</h4>
+
+<p>This manual uses the following typographical conventions:</p>
+
+<ul>
+<li><em>Italic</em>: Used for filenames.</li>
+<li><code>Constant width</code>: Used for environment variables, command line arguments, shell code, key
+bindings, and Lua code, including functions, tables, and variables.</li>
+</ul>
+
+
+<p>Key bindings use the following modifier key representations:</p>
+
+<table>
+<thead>
+<tr>
+<th>Modifier </th>
+<th> Windows, Linux, BSD </th>
+<th> macOS </th>
+<th> Terminal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control </td>
+<td> <code>Ctrl</code> </td>
+<td> <code>^</code> </td>
+<td> <code>^</code></td>
+</tr>
+<tr>
+<td>Alt </td>
+<td> <code>Alt</code> </td>
+<td> <code>⌥</code> </td>
+<td> <code>M-</code></td>
+</tr>
+<tr>
+<td>Command </td>
+<td> N/A </td>
+<td> <code>⌘</code> </td>
+<td> N/A</td>
+</tr>
+<tr>
+<td>Shift </td>
+<td> <code>Shift</code> </td>
+<td> <code>⇧</code> </td>
+<td> <code>S-</code></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>This manual uses the following terminology:</p>
+
+<ul>
+<li><em>buffer</em>: An object that contains editable text. Some other applications call this object a
+document or file.</li>
+<li><em>view</em>: An object that displays a single buffer. Some other applications call this object
+a window.</li>
+<li><em>caret</em>: The visual that represents the text insertion point. It is usually a blinking line.</li>
+<li><em>module</em>: A package of Lua code that provides functionality for Textadept.</li>
+<li><em>lexer</em>: A Lua module that highlights the syntax of source code written in a particular
+programming language. Textadept refers to a programming language by its lexer&rsquo;s name.</li>
+</ul>
+
+
+<p>Finally, this manual assumes you are familiar enough with the <a href="https://www.lua.org">Lua</a> programming language that
+you can understand the simple code samples spread throughout the manual&rsquo;s contents. If you would
+like to quickly get up to speed, or need a refresher, the excerpt from <a href="https://orbitalquark.github.io/lua-quick-reference">Lua Quick Reference</a>
+may be of help.</p>
+
+<a name="L-7e--2f-.textadept"></a>
+<h4>~/.textadept</h4>
+
+<p>Textadept stores all settings and user data in a local user directory that varies, depending
+on the platform. This directory can also be configured using command line arguments. On
+Windows systems, the default user directory is <em>C:\Users\username\.textadept\</em>
+or <em>C:\Documents and Settings\username\.textadept\</em>; on macOS, the default
+user directory is <em>/Users/username/.textadept/</em>; and on Linux and BSD, it is
+<em>/home/username/.textadept/</em>. (Substitute <em>username</em> for your actual user name.)  From this point
+forward, the manual will use <em>~/.textadept/</em> in place of any platform-specific user data directory.</p>
+
+<p>There is a special file, <em>~/.textadept/init.lua</em>, that Textadept will create for you if it does
+not already exist. This file is what you use to configure Textadept, specify your preferences,
+and customize what the application does when it starts. For example, you can use this file to set
+a color theme, specify default buffer and view settings, change the settings of existing modules,
+load custom modules, configure key bindings, extend menus, enhance support for file types and
+programming languages, and run arbitrary Lua code. These topics will be covered throughout
+the manual. Textadept&rsquo;s comprehensive <a href="api.html">Lua API</a> lists, among other things, all configurable
+settings for buffers, views, and modules.  You can open your <em>~/.textadept/init.lua</em> file via
+<code>Ctrl+P</code> on Windows, Linux, and BSD, <code>⌘,</code> on macOS, and <code>M-~</code> in the terminal version.</p>
+
+<p>Here is a simple <em>~/.textadept/init.lua</em> for illustration:</p>
+
+<pre><code>-- Adjust the default theme's font and size.
+if not CURSES then
+  view:set_theme('light', {font = 'DejaVu Sans Mono', size = 12})
+end
+
+-- Always use tabs for indentation.
+buffer.use_tabs = true
+buffer.tab_width = 4
+
+-- Always strip trailing spaces on save, automatically highlight the current
+-- word, and use C99-style line comments in C code.
+textadept.editing.strip_trailing_spaces = true
+textadept.editing.highlight_words = textadept.editing.HIGHLIGHT_CURRENT
+textadept.editing.comment_string.ansi_c = '//'
+
+-- Load an external module and bind a key to it.
+local ctags = require('ctags')
+keys.f12 = ctags.goto_tag
+
+-- Recognize .luadoc files as Lua code.
+textadept.file_types.extensions.luadoc = 'lua'
+
+-- Change the run commands for Lua and Python
+textadept.run.run_commands.lua = 'lua5.1 "%f"'
+textadept.run.run_commands.python = 'python3 "%f"'
+
+-- Always use PEP-8 indentation style for Python files.
+events.connect(events.LEXER_LOADED, function(name)
+  if name ~= 'python' then return end
+  buffer.use_tabs = false
+  buffer.tab_width = 4
+end)
+</code></pre>
+
+<p><strong>Note:</strong> <em>~/.textadept/init.lua</em> must not call any functions that create buffers and views
+(e.g. <code>ui.print()</code>, <code>io.open_file()</code>, and <code>buffer.new()</code>) at file-level scope. Buffers and
+views can only be created within functions assigned to keys, associated with menu items, or
+connected to events.</p>
+
+<hr />
+
+<a name="Getting-Started"></a>
+<h3>Getting Started</h3>
+
+<hr />
+
+<a name="Requirements"></a>
+<h4>Requirements</h4>
+
+<p>In its bid for minimalism, Textadept depends on very little to run. On Windows and macOS,
+it has no external dependencies. On Linux and BSD, the GUI version depends only on <a href="https://www.gtk.org/download/linux.php">GTK</a>
+(a cross-platform GUI toolkit), and the terminal version depends only on a wide-character
+implementation of curses like <a href="https://invisible-island.net/ncurses/#download_ncurses">ncurses</a>(w). Most Linux and BSD systems either already have
+these dependencies installed, or they are readily available from a package manager.</p>
+
+<p>Windows 7 (64-bit) and Mac OSX 10.10 (Yosemite) are the minimum required operating systems. Linux
+and BSD have no defined minimum.</p>
+
+<a name="Download"></a>
+<h4>Download</h4>
+
+<p>Textadept releases can be found <a href="https://github.com/orbitalquark/textadept/releases">here</a>. Select the appropriate package for your platform. A
+comprehensive list of changes between releases can be found <a href="changelog.html">here</a>. You can also download
+a separate set of modules that provide extra features and functionality to the core application.</p>
+
+<p><strong>Windows Note:</strong> antivirus software may flag the Windows package as containing a virus or
+malware. This is a false-positive, likely due to Textadept&rsquo;s terminal version executable,
+which is a console application.</p>
+
+<p>The following table lists Textadept&rsquo;s approximate download and installation size for each platform.</p>
+
+<table>
+<thead>
+<tr>
+<th>Platform </th>
+<th> Download Size </th>
+<th> Installed Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux </td>
+<td> 4 MB </td>
+<td> 8 MB</td>
+</tr>
+<tr>
+<td>Windows </td>
+<td> 21 MB </td>
+<td> 57 MB (11 MB without bundled GTK Runtime)</td>
+</tr>
+<tr>
+<td>macOS </td>
+<td> 20 MB </td>
+<td> 65 MB (9 MB without bundled GTK Runtime)</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><strong>Note:</strong> each platform package contains two executables, one for the GUI version of Textadept,
+and one for the terminal version.</p>
+
+<a name="Installation"></a>
+<h4>Installation</h4>
+
+<p>Installing Textadept is simple and easy. You do not need administrator privileges. On Windows,
+Linux, and BSD, simply unpack the archive anywhere. On macOS, unpack the archive and move
+<em>Textadept.app</em> to your user or system <em>Applications/</em> directory like any other macOS
+application. The macOS archive also contains a <em>ta</em> script for launching Textadept from the
+command line. You can put this script somewhere in your <code>$PATH</code> (e.g. <em>/usr/local/bin/</em>),
+but this is completely optional.</p>
+
+<p>If you downloaded Textadept&rsquo;s extra set of modules, you can unpack its contents into Textadept&rsquo;s
+directory (thus merging the <em>modules/</em> directories) on Windows, Linux, and BSD. On macOS, it
+is recommended to create a <em>~/.textadept/</em> directory (if it does not already exist) and unpack
+the modules there (thus creating or merging the <em>modules/</em> directory).</p>
+
+<p><strong>Note:</strong> Textadept generally does not auto-load <a href="#modules">modules</a>, so you will need to load
+at least some of those extra modules manually. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>require('ctags')
+require('file_diff')
+require('spellcheck')
+</code></pre>
+
+<a name="Updating"></a>
+<h4>Updating</h4>
+
+<p>Textadept releases typically occur on the first day of the month every 1-2 months. There is no
+auto-update process. (Textadept does not connect to the internet; it&rsquo;s just a text editor.) Simply
+download the new version and copy its contents into your current installation, overwriting any
+existing files and directories.</p>
+
+<a name="Running"></a>
+<h4>Running</h4>
+
+<p><img src="images/linux.png" alt="Linux" />
+&nbsp;&nbsp;
+<img src="images/macosx.png" alt="macOS" />
+&nbsp;&nbsp;
+<img src="images/win32.png" alt="Win32" />
+&nbsp;&nbsp;
+<img src="images/ncurses.png" alt="curses" /></p>
+
+<p>Run Textadept on Windows by double-clicking <em>textadept.exe</em> or <em>textadept-curses.exe</em>. On macOS,
+double-click <em>Textadept.app</em> or invoke the <em>ta</em> script from the command line. On Linux and BSD,
+invoke <em>textadept</em> or <em>textadept-curses</em> from a file browser, run dialog, terminal, etc.</p>
+
+<p>For convenience, you can create shortcuts to the executables on the Windows Desktop, Start Menu,
+Quick Launch toolbar, etc. On macOS, you can pin the app to your dock. On Linux and BSD, you can
+create a symbolic link to the executables from somewhere in your <code>$PATH</code> (e.g. <em>/usr/local/bin/</em>)
+or make a GNOME, KDE, XFCE, etc. button or menu launcher. Textadept&rsquo;s <em>src/textadept.desktop</em>
+and <em>src/textadept-curses.desktop</em> files may be of help.</p>
+
+<p>Textadept accepts a variety of command line arguments, which are listed in the table below.</p>
+
+<table>
+<thead>
+<tr>
+<th>Option </th>
+<th style="text-align:center;"> Arguments </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-e</code>, <code>--execute</code> </td>
+<td style="text-align:center;"> 1 </td>
+<td> Run the given Lua code</td>
+</tr>
+<tr>
+<td><code>-f</code>, <code>--force</code> </td>
+<td style="text-align:center;"> 0 </td>
+<td> Forces unique instance</td>
+</tr>
+<tr>
+<td><code>-h</code>, <code>--help</code> </td>
+<td style="text-align:center;"> 0 </td>
+<td> Shows this<sup>a</sup></td>
+</tr>
+<tr>
+<td><code>-l</code>, <code>--line</code> </td>
+<td style="text-align:center;"> 1 </td>
+<td> Jumps to a line in the previously opened file</td>
+</tr>
+<tr>
+<td><code>-n</code>, <code>--nosession</code> </td>
+<td style="text-align:center;"> 0 </td>
+<td> No state saving/restoring functionality</td>
+</tr>
+<tr>
+<td><code>-p</code>, <code>--preserve</code> </td>
+<td style="text-align:center;"> 0 </td>
+<td> Preserve ^Q and ^S flow control sequences<sup>b</sup></td>
+</tr>
+<tr>
+<td><code>-s</code>, <code>--session</code> </td>
+<td style="text-align:center;"> 1 </td>
+<td> Loads the given session on startup</td>
+</tr>
+<tr>
+<td><code>-u</code>, <code>--userhome</code> </td>
+<td style="text-align:center;"> 1 </td>
+<td> Sets alternate user data directory</td>
+</tr>
+<tr>
+<td><code>-v</code>, <code>--version</code> </td>
+<td style="text-align:center;"> 0 </td>
+<td> Prints version and copyright info<sup>a</sup></td>
+</tr>
+</tbody>
+</table>
+
+
+<p><sup>a</sup>The terminal version does not support these.<br/>
+<sup>b</sup>Non-Windows terminal version only.</p>
+
+<p>You can add your own command line arguments using <a href="api.html#args.register"><code>args.register()</code></a>. For example, in your
+<em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>args.register('-r', '--read-only', 0, function()
+  events.connect(events.FILE_OPENED, function()
+    buffer.read_only = true -- make all opened buffers read-only
+  end)
+  textadept.menu.menubar = nil -- hide the menubar
+end, "Read-only mode")
+</code></pre>
+
+<p>Textadept can also open files and projects using the command line. For example:</p>
+
+<pre><code>textadept /path/to/file1 ../relative/path/to/file2
+textadept /path/to/project/ relative/path/to/file1 relative/file2
+</code></pre>
+
+<p>Unless a filename is specified as an absolute path, Textadept assumes it is relative to
+the application&rsquo;s current working directory (cwd). Textadept&rsquo;s cwd is initially the command
+line&rsquo;s cwd. (If Textadept is not being run from the command line, its cwd is unspecified.) If a
+project directory is specified, it becomes Textadept&rsquo;s cwd. (Textadept does not open all files
+in that directory.)  If multiple project directories are specified, the last one becomes the cwd.</p>
+
+<p>By default, Textadept saves its state when it exits. (This state consists of buffers and split
+views that are open, the list of recently opened files, the application window&rsquo;s size and
+maximized state, etc.) If Textadept is not given any files or projects to open, it will try to
+restore its state at last exit.</p>
+
+<p><strong>Tip:</strong> you can explicitly tell Textadept to load a session by name using the <code>-s</code> or <code>--session</code>
+command line argument. You can disable session functionality using <code>-n</code> or <code>--nosession</code>. Session
+files are stored in <em>~/.textadept/</em>, and the default session name is &ldquo;session&rdquo;.</p>
+
+<p>The GUI version of Textadept is a single-instance application. This means that after you start
+Textadept, any time you invoke it again (e.g. opening a file from a file browser or command
+line), the action happens in the original instance. If you want to run separate instances of
+Textadept, pass the <code>-f</code> or <code>--force</code> command line flag. On Windows, you can create a shortcut
+to <em>textadept.exe</em> that passes this flag and use that shortcut to run Textadept. On Linux and
+BSD, you can set up your button or menu launchers to pass the flag to the <em>textadept</em> executable.</p>
+
+<p>Textadept can be run as a portable application. This is useful if, for example, you want to
+install Textadept onto a flash drive and take it with you for use on multiple machines. Normally,
+all settings and user data is stored in <em>~/.textadept/</em> (a local user directory that varies,
+depending on the platform).  However, this user directory can be controlled using the <code>-u</code> or
+<code>--userhome</code> command line argument. For example, invoking <em>textadept.exe</em> with the command line
+arguments <code>-u userdata</code> will read from and store settings and user data to a <em>userdata/</em> directory
+located inside an installation of Textadept. You can create a Windows shortcut that passes these
+command line arguments to the Textadept executable and use that shortcut to run Textadept portably.</p>
+
+<p>Textadept&rsquo;s user interface has been translated into a few different languages.  When the
+application starts, it attempts to auto-detect your language settings by reading from the <code>$LANG</code>
+environment variable. If Textadept cannot determine what language to use, or if it does not
+support your language, it falls back on English. You can manually set your locale by copying
+one of the locale configuration files from Textadept&rsquo;s <em>core/locales/</em> to your <em>~/.textadept/</em>
+directory and renaming it <em>locale.conf</em>. If you would like to translate Textadept into your
+language, please translate the English messages in <em>core/locale.conf</em> and send me (see README.md)
+the modified file for inclusion in a future release.</p>
+
+<p><strong>macOS Tip:</strong> by default, macOS does not allow GUI applications like <em>Textadept.app</em> to see
+shell environment variables like <code>$PATH</code>. (The terminal version is unaffected.) Consequently,
+any features that utilize programs contained in <code>$PATH</code> (e.g. the programs in <em>/usr/bin/</em>
+or <em>/usr/local/bin/</em>) will not find those programs. In order to work around this, Textadept
+automatically invokes a user-created <em>~/.textadept/osx_env.sh</em> file when the application
+starts. This script should export all of the environment variables you need Textadept to
+see. For example:</p>
+
+<pre><code>export PATH=$PATH
+</code></pre>
+
+<p><strong>Linux Note:</strong> providing a single binary that runs on all Linux systems proves challenging,
+since the versions of software installed vary widely from distribution to distribution. If you
+get errors like:</p>
+
+<ul>
+<li><code>error while loading shared libraries: &lt;lib&gt;: cannot open shared object file: No such file
+or directory</code></li>
+<li><code>/&lt;path&gt;/libc.so.6: version 'GLIBC_&lt;version&gt;' not found</code></li>
+</ul>
+
+
+<p>you will need to <a href="#compiling">compile</a> Textadept manually for your system, which is a very
+straightforward and easy process.</p>
+
+<hr />
+
+<a name="User-Interface"></a>
+<h3>User Interface</h3>
+
+<hr />
+
+<p><img src="images/ui.png" alt="UI" /></p>
+
+<p>Textadept&rsquo;s user interface is sleek and simple. It consists of a menu bar, tab bar, editor
+view, and statusbar. There is also a find &amp; replace pane and a command entry, though Textadept
+initially hides them both.</p>
+
+<p>Textadept&rsquo;s titlebar shows the name and path of the current, active buffer. A &lsquo;*&rsquo; character,
+if present, indicates there are unsaved changes in that buffer.</p>
+
+<a name="Menu"></a>
+<h4>Menu</h4>
+
+<p>The GUI version of Textadept has a completely customizable menu that provides access to nearly
+all of the application&rsquo;s editing features.</p>
+
+<p><strong>Tip:</strong> Textadept is largely a keyboard-driven application, so nearly every menu item has a key
+binding. For at least the GUI version in the English locale on Windows, Linux, and BSD, each
+menu and menu item also has a unique mnemonic that can be used to activate it. For example,
+<code>Alt+E</code> accesses the &ldquo;Edit&rdquo; menu, <code>S</code> opens the &ldquo;Select&rdquo; sub-menu, and <code>L</code> invokes the menu
+item that selects the current line.</p>
+
+<p>Textadept&rsquo;s menu is also accessible in the form of a searchable dialog via <code>Ctrl+Shift+E</code> on
+Windows, Linux, and BSD, <code>⌘⇧E</code> on macOS, and <code>M-S-C</code> in the terminal version. (Despite the
+fact that the terminal version does not have a menu, it does have this dialog.) Typing part of
+the name of any command in the dialog filters the list, with spaces being wildcards. The arrow
+keys move the selection up and down. Pressing <code>Enter</code>, selecting <code>OK</code>, or double-clicking on a
+command invokes it. (The terminal requires pressing <code>Enter</code>.) This feature is an alternative
+to navigating the menus or remembering key bindings. It can also be used to quickly look up
+key bindings for particular commands.</p>
+
+<p><strong>Note:</strong> for commands that have more than one key binding, only one of those bindings is shown
+in the menu and dialog, and that binding is randomly chosen.</p>
+
+<p>You can extend Textadept&rsquo;s menu with your own menus, sub-menus, and menu items by modifying
+the <a href="api.html#textadept.menu.menubar"><code>textadept.menu.menubar</code></a> table. Any modifications will show up in the selection dialog
+mentioned previously, even in the terminal version.  For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>local tools = textadept.menu.menubar[_L['Tools']]
+tools[#tools + 1] = {''} -- separator
+tools[#tools + 1] = {'Reset L_ua State', reset}
+</code></pre>
+
+<a name="Tab-Bar"></a>
+<h4>Tab Bar</h4>
+
+<p>The GUI version of Textadept has a tab bar that displays all of Textadept&rsquo;s open buffers by name,
+though it is only visible when two or more buffers are open. A &lsquo;*&rsquo; character, if present,
+indicates there are unsaved changes in the marked buffer. There is only one tab bar for the
+entire application, even if there are multiple split views. When two or more views are open, the
+state of the tab bar applies only to the active view, and using the tab bar to switch between
+files also applies only to that view. Right-clicking on the tab bar brings up a configurable
+context menu that is defined by <a href="api.html#textadept.menu.tab_context_menu"><code>textadept.menu.tab_context_menu</code></a>. Tabs can be rearranged
+by clicking on their tops and dragging and dropping them. You can turn off the tab bar by setting
+<a href="api.html#ui.tabs"><code>ui.tabs</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>ui.tabs = false
+</code></pre>
+
+<p>Cycle to the next buffer via <code>Ctrl+Tab</code> on Windows, Linux, and BSD, <code>^⇥</code> on macOS, and <code>M-N</code>
+in the terminal version. Cycle to the previous buffer via <code>Ctrl+Shift+Tab</code>, <code>^⇧⇥</code>, and <code>M-P</code>.</p>
+
+<p><strong>Note:</strong> Textadept does not currently support rearranging tabs (e.g. via drag and drop).</p>
+
+<p>The tab bar is also accessible in the form of a searchable dialog via <code>Ctrl+B</code> on Windows,
+Linux, and BSD, <code>⌘B</code> on macOS, and <code>M-B</code> or <code>M-S-B</code> in the terminal version. (Despite the
+fact that the terminal version does not have a tab bar, it does have this dialog.) The dialog
+displays a list of currently open buffers.  Typing part of any filename filters the list,
+with spaces being wildcards. The arrow keys move the selection up and down. Pressing <code>Enter</code>,
+selecting <code>OK</code>, or double-clicking on a buffer switches to it. (The terminal requires pressing
+<code>Enter</code>.) This feature is particularly useful when many files are open, and navigating through
+the tab bar is tedious.</p>
+
+<p><img src="images/bufferbrowser.png" alt="Buffer Browser" />
+&nbsp;&nbsp;
+<img src="images/bufferbrowserfiltered.png" alt="Buffer Browser Filtered" /></p>
+
+<p>By default, the list shows buffers in the same order as the tab bar (the most recently opened
+buffers are shown towards the bottom). You can configure the list to show the most recently
+viewed buffers first by changing the key binding.  For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>keys['ctrl+b'] = function() ui.switch_buffer(true) end
+</code></pre>
+
+<a name="Editor-View"></a>
+<h4>Editor View</h4>
+
+<p>The editor view is where you will spend most of your time in Textadept. You can split it vertically
+and horizontally as many times as you like, and you can view the same buffer in two or more
+separate views. Lua also has near complete control over all views. The <a href="api.html#buffer"><code>buffer</code></a> and <a href="api.html#view"><code>view</code></a>
+documentation lists everything you can do with buffers and views directly. Right-clicking inside
+a view brings up a configurable context menu that is defined by <a href="api.html#textadept.menu.context_menu"><code>textadept.menu.context_menu</code></a>.</p>
+
+<p>Split views can be dynamically resized by clicking and dragging on the splitter bar that
+separates them. The following key bindings apply for split views:</p>
+
+<ul>
+<li>Split a view horizontally into top and bottom views via <code>Ctrl+Alt+S</code> or <code>Ctrl+Alt+H</code> on Windows,
+Linux, and BSD, <code>^S</code> on macOS, and <code>M-^V S</code> in the terminal version.</li>
+<li>Split a view vertically into side-by-side views via <code>Ctrl+Alt+V</code> on Windows, Linux, and BSD,
+<code>^V</code> on macOS, and <code>M-^V V</code> in the terminal version.</li>
+<li>Cycle to the next split view via <code>Ctrl+Alt+N</code> on Windows, Linux, and BSD, <code>^⌥⇥</code> on macOS,
+and <code>M-^V N</code> in the terminal version.</li>
+<li>Cycle to the previous split view via <code>Ctrl+Alt+P</code> on Windows, Linux, and BSD, <code>^⌥⇧⇥</code>
+on macOS, and <code>M-^V P</code> in the terminal version.</li>
+<li>Grow or shrink a view via <code>Ctrl+Alt++</code> or <code>Ctrl+Alt+-</code>, respectively, on Windows, Linux,
+and BSD; <code>^+</code> or <code>^-</code>, respectively, on macOS; and <code>M-^V +</code> or <code>M-^V -</code> in the terminal version.</li>
+<li>Unsplit the current view by removing its complement view(s) via <code>Ctrl+Alt+W</code> on Windows,
+Linux, and BSD, <code>^W</code> on macOS, and <code>M-^V W</code> in the terminal version.</li>
+<li>Unsplit the current view by removing all other views via <code>Ctrl+Alt+Shift+W</code> on Windows, Linux,
+and BSD, <code>^⇧W</code> on macOS, and <code>M-^V S-W</code> in the terminal version.</li>
+</ul>
+
+
+<p><strong>Note:</strong> depending on the split sequence, the order when cycling between views may not be linear.</p>
+
+<p><strong>Terminal version note:</strong> <code>M-^V</code> is the key chain prefix for split views. Press and release
+the prefix, and then type the next key in the chain by itself in order to perform the split
+view action.</p>
+
+<a name="Find--26-amp-3b--Replace-Pane"></a>
+<h4>Find &amp; Replace Pane</h4>
+
+<p>The find &amp; replace pane is a compact, full-featured pane that allows you to quickly search
+through files and directories. The pane is available only when you need it and quickly gets
+out of your way when you do not, minimizing distractions.</p>
+
+<p>You can summon the find &amp; replace pane via <code>Ctrl+F</code> on Windows, Linux and BSD, <code>⌘F</code> on macOS,
+and <code>M-F</code> or <code>M-S-F</code> in the terminal version. It has the usual find and replace functionality you
+would expect, along with &ldquo;Match Case&rdquo;, &ldquo;Whole Word&rdquo;, &ldquo;<a href="#regex-and-lua-pattern-syntax">Regex</a>&rdquo;, and
+&ldquo;In Files&rdquo; options.  The pane also stores find and replace history, up to 10 entries for each. As
+you search, Textadept can automatically highlight all instances of found text in the current buffer
+by setting <a href="api.html#ui.find.highlight_all_matches"><code>ui.find.highlight_all_matches</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>ui.find.highlight_all_matches = true
+</code></pre>
+
+<p><strong>Note:</strong> Textadept does not support multi-line regex searches.</p>
+
+<p>While the pane is open in the GUI, the following key bindings apply:</p>
+
+<ul>
+<li>Perform &ldquo;Find Next&rdquo; and &ldquo;Find Prev&rdquo; in the &ldquo;Find&rdquo; entry via <code>Enter</code> and <code>Shift+Enter</code>,
+respectively.</li>
+<li><p>Perform &ldquo;Replace&rdquo; and &ldquo;Replace All&rdquo; in the &ldquo;Replace&rdquo; entry via <code>Enter</code> and <code>Shift+Enter</code>,
+respectively. When the &ldquo;Regex&rdquo; find option is enabled,</p>
+
+<ul>
+<li><code>\</code><em><code>n</code></em> in the &ldquo;Replace&rdquo; entry represents the <em>n</em>th captured matching region&rsquo;s text, and
+<code>\0</code> represents all matched text.</li>
+<li><code>\U</code> and <code>\L</code> converts everything up to the next <code>\L</code>, <code>\U</code>, or <code>\E</code> to uppercase and
+lowercase, respectively. (<code>\E</code> turns off conversion.)</li>
+<li><code>\u</code> and <code>\l</code> converts the next character to uppercase and lowercase, respectively. These
+may appear within <code>\U</code> and <code>\L</code> constructs.</li>
+</ul>
+</li>
+<li><p>For at least the English locale, toggle the find options using their button mnemonics: <code>Alt+M</code>,
+<code>Alt+W</code>, <code>Alt+X</code>, <code>Alt+I</code> on Windows, Linux, and BSD, and <code>⌘M</code>, <code>⌘W</code>, <code>⌘X</code>, and <code>⌘I</code>,
+respectively, on macOS.</p></li>
+<li>Cycle through find/replace history via <code>Up</code> and <code>Down</code> on Windows, Linux, BSD, and the terminal
+version, and <code>⇡</code> and <code>⇣</code> on macOS.</li>
+<li>Hide the pane via <code>Esc</code>.</li>
+</ul>
+
+
+<p>While the pane is open in the terminal version, the following key bindings apply:</p>
+
+<ul>
+<li>Switch between &ldquo;Find&rdquo; and &ldquo;Replace&rdquo; entries via <code>Down</code> and <code>Up</code>.</li>
+<li>Toggle between &ldquo;Find Next&rdquo; and &ldquo;Find Prev&rdquo; in the &ldquo;Find&rdquo; entry via <code>Tab</code>.</li>
+<li>Toggle between &ldquo;Replace&rdquo; and &ldquo;Replace All&rdquo; in the &ldquo;Replace&rdquo; entry via <code>Tab</code>.</li>
+<li>Perform the highlighted find/replace action via <code>Enter</code>.</li>
+<li>Toggle the find options via <code>F1</code>, <code>F2</code>, <code>F3</code>, and <code>F4</code>.</li>
+<li>Cycle through find/replace history via <code>^P</code> and <code>^N</code>.</li>
+<li>Erase the contents of the focused entry via <code>^U</code>.</li>
+<li>Hide the pane via <code>Esc</code>.</li>
+</ul>
+
+
+<p>When the pane is closed, you can quickly perform &ldquo;Find Next&rdquo;, &ldquo;Find Prev&rdquo;, &ldquo;Replace&rdquo;, and
+&ldquo;Replace All&rdquo; via <code>Ctrl+G</code>, <code>Ctrl+Shift+G</code>, <code>Ctrl+Alt+R</code>, and <code>Ctrl+Alt+Shift+R</code>, respectively,
+on Windows, Linux, and BSD; <code>⌘G</code>, <code>⌘⇧G</code>, <code>^R</code>, and <code>^⇧R</code>, respectively, on macOS; and
+<code>M-G</code>, <code>M-S-G</code>, <code>M-R</code>, and <code>M-S-R</code> in the terminal version.</p>
+
+<p><strong>Tip:</strong> by default, &ldquo;Replace All&rdquo; replaces all text in the buffer. Selecting text and then
+performing &ldquo;Replace All&rdquo; replaces all text in that selection only.</p>
+
+<a name="Find-in-Files"></a>
+<h5>Find in Files</h5>
+
+<p>Textadept can search for text within multiple files and directories via <code>Ctrl+Shift+F</code> on
+Windows, Linux, and BSD, and <code>⌘⇧F</code> on macOS. (The terminal version does not have a default
+key binding for finding in files.) Invoking &ldquo;Find Next&rdquo; prompts you for a directory to search
+in. The &ldquo;Replace&rdquo; entry has been substituted for a &ldquo;Filter&rdquo; entry that contains files and
+directories to include or exclude from the search.</p>
+
+<p>A filter consists of a comma-separated list of <a href="#regex-and-lua-pattern-syntax">Lua patterns</a>
+that match filenames and directories to include or exclude. Patterns are inclusive by
+default. Exclusive patterns begin with a &lsquo;!&rsquo;. If no inclusive patterns are given, any filename
+is initially considered. As a convenience, file extensions can be specified literally instead
+of as a Lua pattern (e.g. &lsquo;.lua&rsquo; vs. &lsquo;%.lua$&rsquo;), and &lsquo;/&rsquo; also matches the Windows directory
+separator (&lsquo;[/\]&rsquo; is not needed). The default filter excludes many common binary files and
+version control directories from searches.</p>
+
+<p><strong>Tip:</strong> Textadept keeps track of filters set per-directory. You can also set per-directory filters
+in Lua by modifying <a href="api.html#ui.find.find_in_files_filters"><code>ui.find_in_files_filters</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>-- Only search in certain source directories.
+ui.find.find_in_files_filters['/path/to/project'] = {'/include', '/src'}
+</code></pre>
+
+<p>After performing a &ldquo;Find in Files&rdquo; search, a temporary buffer lists the search results. You can
+use the arrow keys to navigate within the list and press <code>Enter</code> to jump to a result&rsquo;s location
+in its respective file. You can also double-click on results or jump to the next or previous
+result via <code>Ctrl+Alt+G</code> or <code>Ctrl+Alt+Shift+G</code>, respectively, on Windows, Linux, and BSD; and
+<code>^⌘G</code> or <code>^⌘⇧G</code>, respectively, on macOS. (The terminal version does not have default key
+bindings for these actions.)</p>
+
+<p><img src="images/findinfiles.png" alt="Find in Files" /></p>
+
+<a name="Incremental-Find"></a>
+<h5>Incremental Find</h5>
+
+<p>Textadept searches for text incrementally as you type when you summon the find &amp; replace pane
+via <code>Ctrl+Alt+F</code> on Windows, Linux, and BSD, <code>^⌘F</code> on macOS, and <code>M-^F</code> in the terminal
+version. All of the find options apply except for &ldquo;In Files&rdquo;.</p>
+
+<a name="Command-Entry"></a>
+<h4>Command Entry</h4>
+
+<p>The versatile command entry has many different roles. Its primary role is to execute Lua commands
+and interact with Textadept&rsquo;s internal Lua state. In another context it filters text through
+shell commands. <a href="api.html#ui.command_entry">Lua extensions</a> allow it to do even more. Like the find &amp; replace pane,
+the command entry pops in and out as you wish. Each role has its own history that can be cycled
+through via the <code>Up</code> and <code>Down</code> key bindings on Windows, Linux, BSD, and the terminal version,
+and <code>⇡</code> and <code>⇣</code> on macOS.</p>
+
+<a name="Lua-Command-Entry"></a>
+<h5>Lua Command Entry</h5>
+
+<p><img src="images/commandentry.png" alt="Command Entry" /></p>
+
+<p>You can open the Lua command entry via <code>Ctrl+E</code> on Windows, Linux, and BSD, <code>⌘E</code> on macOS, and
+<code>M-C</code> in the terminal version. It acts very similarly to Lua&rsquo;s interactive prompt. Type in the Lua
+command or code to run and press <code>Enter</code> to invoke or run it. Textadept&rsquo;s <a href="api.html">Lua API</a> contains
+all of the application&rsquo;s built-in commands. For convenience, the contents of the <a href="api.html#buffer"><code>buffer</code></a>,
+<a href="api.html#view"><code>view</code></a>, <a href="api.html#ui"><code>ui</code></a>, and <a href="api.html#textadept"><code>textadept</code></a> tables are considered to be global variables, the
+first parameter to <code>buffer</code> and <code>view</code> functions may be omitted, and function call parentheses
+can also be omitted. For example, instead of entering <code>buffer:append_text('foo')</code>, you can
+enter <code>append_text('foo')</code>.  Instead of <code>view:split()</code>, you can simply use <code>split</code>. These
+convenience facilities are not available in normally executed Lua code, such as code in
+<em>~/.textadept/init.lua</em>.</p>
+
+<p><strong>Warning:</strong> if you try to cause instability of Textadept&rsquo;s Lua state, you will probably succeed,
+so be careful.</p>
+
+<p>The following key bindings apply in the Lua command entry:</p>
+
+<ul>
+<li>Show a documentation popup for the command under or behind the caret via <code>Ctrl+H</code> on Windows,
+Linux, and BSD, <code>^H</code> on macOS, and <code>M-H</code> or <code>M-S-H</code> in the terminal version.</li>
+<li>Show completion candidates for Lua variables, tables, functions, and fields via <code>Tab</code> on
+Windows, Linux, BSD, and the terminal version, and <code>⇥</code> on macOS.  Use the arrow keys to
+make a selection and press <code>Enter</code> to insert it.</li>
+</ul>
+
+
+<p><img src="images/commandentrycompletion.png" alt="Command Completion" /></p>
+
+<p>You can specify on the command line Lua commands and code to run on startup using the <code>-e</code> and
+<code>--execute</code> command line argument. This is useful when you want to run dynamic commands that
+do not belong in <em>~/.textadept/init.lua</em>.</p>
+
+<p><strong>Tip:</strong> a side-effect of single-instance functionality in the GUI version of Textadept is that
+you can remotely control the original instance of Textadept.  For example:</p>
+
+<pre><code>ta ~/.textadept/init.lua &amp;
+ta -e "events.emit(events.FIND, 'require')"
+</code></pre>
+
+<p>This will search for the first instance of the word &ldquo;require&rdquo; in the current file.</p>
+
+<a name="Shell-Command-Entry-and-Filtering-Text"></a>
+<h5>Shell Command Entry and Filtering Text</h5>
+
+<p>You can filter text through shell commands via <code>Ctrl+|</code> on Windows, Linux, and BSD, <code>⌘|</code>
+on macOS, and <code>^\</code> in the terminal version. An example would be running the shell command
+<code>sort</code>, which accepts lines in a buffer as standard input (stdin), sorts those lines, and then
+emits them to standard output (stdout), which Textadept replaces the original input text with.
+<a href="api.html#textadept.editing.filter_through"><code>textadept.editing.filter_through()</code></a> describes how this feature determines stdin.</p>
+
+<p><strong>Note:</strong> be careful when using commands that emit stdout while reading stdin (as opposed
+to emitting stdout only after stdin is closed).  Input that generates more output than stdout
+can buffer may hang Textadept. On Linux for example, stdout may only be able to hold 64K while
+there is still incoming input.</p>
+
+<a name="Statusbar"></a>
+<h4>Statusbar</h4>
+
+<p>The statusbar consists of two sections. The left section displays temporary status messages,
+while the right section shows buffer status information. Buffer status information includes:</p>
+
+<ul>
+<li>The current line and column number.</li>
+<li>The lexer language name.</li>
+<li>The line ending mode, or EOL mode, which is either CRLF (&ldquo;\r\n&rdquo;) or LF (&lsquo;\n&rsquo;).  Line endings
+are the characters that separate lines.</li>
+<li>The indentation settings, which are a combination of an indentation character (either a tab
+or a space) and an indentation size (a measure of how many space characters are in one level
+of indentation). If tabs are used for indentation, then the indentation size is the number
+of space characters to draw for each tab character.</li>
+<li>The buffer&rsquo;s encoding. File and buffer encoding specifies how to interpret text bytes for
+display.</li>
+</ul>
+
+
+<p><img src="images/docstatusbar.png" alt="Document Statusbar" /></p>
+
+<hr />
+
+<a name="Working-with-Files-and-Projects"></a>
+<h3>Working with Files and Projects</h3>
+
+<hr />
+
+<p>Textadept allows you to open files using a variety of methods:</p>
+
+<ul>
+<li>Open, using a standard file chooser dialog, one or more files in a single directory via
+<code>Ctrl+O</code> on Windows, Linux, and BSD, <code>⌘O</code> on macOS, and <code>^O</code> in the terminal version.</li>
+<li>Open, using a quick open dialog, one or more files in the current project or Textadept&rsquo;s
+current working directory via <code>Ctrl+Alt+Shift+P</code> on Windows, Linux, and BSD, <code>^⌘⇧P</code> on
+macOS, and <code>M-^P</code> in the terminal version. Typing part of any filename filters the list,
+with spaces being wildcards. The arrow keys move the selection up and down. Holding down
+<code>Shift</code> while pressing the arrow keys selects multiple files, as does holding down <code>Ctrl</code>
+while clicking.  Pressing <code>Enter</code> or selecting <code>OK</code> opens all selected files. Double-clicking
+on a single file opens it. (The terminal requires pressing <code>Enter</code>.)</li>
+<li>Open, using a quick open dialog, one or more files in the directory of the currently opened
+file via <code>Ctrl+Alt+Shift+O</code> on Windows, Linux, and BSD, <code>^⌘⇧O</code> on macOS, and <code>M-S-O</code>
+in the terminal version.</li>
+<li>Open a file by dragging it from a file manager and dropping it into one of Textadept&rsquo;s views.</li>
+<li>Open a recently opened file from a list of recent files via <code>Ctrl+Alt+O</code> on Windows, Linux,
+and BSD, <code>^⌘O</code> on macOS, and <code>M-^O</code> in the terminal version.</li>
+<li>Open, using a quick open dialog, one or more files in <em>~/.textadept/</em> via <code>Ctrl+U</code> on Windows,
+Linux, and BSD, <code>⌘U</code> on macOS, and <code>^U</code> in the terminal version.</li>
+<li>Reopen the currently opened file, discarding any unsaved changes, via <code>Ctrl+Shift+O</code> on Windows,
+Linux, and BSD, <code>⌘⇧O</code> on macOS, and <code>M-O</code> in the terminal version. Textadept will prompt
+you to reload a file if the editor detects it has been modified externally.</li>
+</ul>
+
+
+<p><img src="images/snapopen.png" alt="Quick Open" /></p>
+
+<p>When it comes to projects, Textadept&rsquo;s only concept of a project is a parent directory under
+a recognized form of version control (Git, Mercurial, SVN, Bazaar, and Fossil). There is no
+&ldquo;Open Project&rdquo; action. Textadept can work with multiple projects at once, since the current
+project depends largely on context.  The current project is determined as follows:</p>
+
+<ol>
+<li>If the current buffer is a file, its parent directory is searched for a version control
+directory. If none is found, that directory&rsquo;s parent directory is searched next, and so
+on. If a version control directory is found, its parent directory is the current project.</li>
+<li>If Textadept&rsquo;s current working directory (cwd) contains a version control directory, that cwd
+is the current project. Otherwise, the cwd&rsquo;s parent directory is searched, just like in step 1.</li>
+<li>If no version control directory is found, there is no current project.</li>
+</ol>
+
+
+<p><strong>Tip:</strong> you can specify Textadept&rsquo;s current working directory by passing it on the command
+line when running the application. This effectively starts Textadept with a &ldquo;default project&rdquo;.</p>
+
+<p>By default, Textadept&rsquo;s quick open dialog displays nearly all types of files, and only the first
+1000 files it finds. You can assign a project or directory-specific filter that indicates which
+files to display for that project or directory by modifying <a href="api.html#io.quick_open_filters"><code>io.quick_open_filters</code></a>, and
+you can specify a different maximum file list size that applies to all projects and directories
+by setting <a href="api.html#io.quick_open_max"><code>io.quick_open_max</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>io.quick_open_filters['/path/to/project'] = {'/include', '/src'}
+io.quick_open_max = 10000 -- support huge projects
+</code></pre>
+
+<p>A filter consists of a comma-separated list of <a href="#regex-and-lua-pattern-syntax">Lua patterns</a>
+that match filenames and directories to include or exclude. Patterns are inclusive by
+default. Exclusive patterns begin with a &lsquo;!&rsquo;. If no inclusive patterns are given, any filename
+is initially considered. As a convenience, file extensions can be specified literally instead
+of as a Lua pattern (e.g. &lsquo;.lua&rsquo; vs. &lsquo;%.lua$&rsquo;), and &lsquo;/&rsquo; also matches the Windows directory
+separator (&lsquo;[/\]&rsquo; is not needed). The default filter excludes many common binary files and
+version control directories from searches.</p>
+
+<p>You can mimic a more traditional approach to projects by saving and loading project-specific
+sessions via the &ldquo;File > Save Session&hellip;&rdquo; and &ldquo;File > Load Session&hellip;&rdquo; menu items, respectively. A
+session can be loaded on startup using the <code>-s</code> or <code>--session</code> command line argument.</p>
+
+<a name="Language"></a>
+<h5>Language</h5>
+
+<p>When Textadept opens a file, it automatically attempts to identify the programming language
+associated with that file and assigns a lexer to perform syntax highlighting of the file&rsquo;s
+contents. The identification process is as follows:</p>
+
+<ol>
+<li>The first line of the file is checked against any Lua patterns in
+<a href="api.html#textadept.file_types.patterns"><code>textadept.file_types.patterns</code></a>. If there is a match, the lexer associated with that
+matching pattern is used.</li>
+<li>The file&rsquo;s extension is checked against any of the extensions in
+<a href="api.html#textadept.file_types.extensions"><code>textadept.file_types.extensions</code></a>. If there is a match, the lexer associated with that
+matching extension is used. If the file does not have an extension, the entire file name is
+used in the check.</li>
+</ol>
+
+
+<p>You can associate first line patterns, file extensions, and file names with lexers by modifying
+<a href="api.html#textadept.file_types.patterns"><code>textadept.file_types.patterns</code></a> and <a href="api.html#textadept.file_types.extensions"><code>textadept.file_types.extensions</code></a>. For example,
+in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.file_types.patterns['^#!.+/zsh'] = 'bash'
+textadept.file_types.extensions.luadoc = 'lua'
+</code></pre>
+
+<p>Textadept has lexers for more than 100 different programming languages and recognizes hundreds
+of file types. In the event that your programming language is not understood, you can write a
+<a href="api.html#lexer">lexer</a> for it, place that lexer in your <em>~/.textadept/lexers/</em> directory, and add an extension
+and/or pattern for it.</p>
+
+<p>For a given lexer name, Textadept attempts to find, in order, that lexer from the following
+locations:</p>
+
+<ol>
+<li>Your <em>~/.textadept/lexers/</em> directory.</li>
+<li>Textadept&rsquo;s <em>lexers/</em> directory.</li>
+</ol>
+
+
+<p><strong>Tip:</strong> placing lexers in your user data directory avoids the possibility of you overwriting
+them when you update Textadept. These lexers also take precedence over the ones installed
+with Textadept.</p>
+
+<p>You can manually change a buffer&rsquo;s lexer via <code>Ctrl+Shift+L</code> on Windows, Linux, and BSD, <code>⌘⇧L</code>
+on macOS, and <code>M-S-L</code> in the terminal version. Typing part of a lexer name in the dialog filters
+the list, with spaces being wildcards. The arrow keys move the selection up and down. Pressing
+<code>Enter</code>, selecting <code>OK</code>, or double-clicking on a lexer assigns it to the current buffer. (The
+terminal requires pressing <code>Enter</code>.)</p>
+
+<a name="Encoding"></a>
+<h5>Encoding</h5>
+
+<p>Textadept has the ability to work with files encoded in one of many different encodings, but by
+default it only attempts to read UTF-8, ASCII, CP1252, and UTF-16 files, in that order. If you work
+with files that have other encodings, you will need to add them to <a href="api.html#io.encodings"><code>io.encodings</code></a>, Textadept&rsquo;s
+known encoding list, before attempting to open one. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>io.encodings[#io.encodings + 1] = 'UTF-32'
+table.insert(io.encodings, 3, 'Macintosh') -- before CP1252
+</code></pre>
+
+<p>You can convert a buffer&rsquo;s encoding using the &ldquo;Buffer > Encoding&rdquo; menu or
+<a href="api.html#buffer.set_encoding"><code>buffer.set_encoding()</code></a>. You can extend the menu to include more encodings.  For example,
+in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>local menu = textadept.menu.menubar[_L['Buffer']][_L['Encoding']]
+local encoding = 'UTF-32'
+menu[#menu + 1] = {encoding, function() buffer:set_encoding(encoding) end}
+</code></pre>
+
+<p>The default encoding for new buffers is UTF-8, due to its wide support in other text editors
+and all modern operating systems.</p>
+
+<a name="Buffer-Settings"></a>
+<h5>Buffer Settings</h5>
+
+<p>Textadept attempts to auto-detect a file&rsquo;s line end mode (EOL mode), falling back on CRLF
+(&ldquo;\r\n&rdquo;) by default on Windows, and LF (&lsquo;\n&rsquo;) on all other platforms. You can manually change
+the line ending mode using the &ldquo;Buffer > EOL Mode&rdquo; menu.</p>
+
+<p>Textadept does not attempt to auto-detect a file&rsquo;s indentation. The default indentation setting
+is two spaces, but you can specify your preferred indentation settings globally, and on a
+language-specific basis. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>-- Default indentation settings for all buffers.
+buffer.use_tabs = true
+buffer.tab_width = 8
+
+-- Indentation settings for individual languages.
+events.connect(events.LEXER_LOADED, function(name)
+  if name == 'python' then
+    buffer.use_tabs = false
+    buffer.tab_width = 4
+  elseif name == 'ruby' or name == 'yaml' then
+    buffer.use_tabs = false
+    buffer.tab_width = 2
+  end
+end)
+</code></pre>
+
+<p>You can manually change a buffer&rsquo;s indentation using the following process:</p>
+
+<ol>
+<li>Toggle between using tabs and spaces via <code>Ctrl+Alt+Shift+T</code> on Windows, Linux, and BSD,
+<code>^⇧T</code> on macOS, and <code>M-T</code> or <code>M-S-T</code> in the terminal version.</li>
+<li>Set the indentation size via the &ldquo;Buffer > Indentation&rdquo; menu.</li>
+<li>Optionally convert existing indentation to the new indentation settings via <code>Ctrl+Alt+I</code>
+on Windows, Linux, and BSD, <code>^I</code> on macOS, and <code>M-I</code> in the terminal version.</li>
+</ol>
+
+
+<a name="View-Settings"></a>
+<h5>View Settings</h5>
+
+<p>Textadept normally does not wrap long lines into view, nor does it show whitespace characters. You
+can toggle line wrapping for the current buffer via <code>Ctrl+Alt+\</code> on Windows, Linux, and BSD, and
+<code>^\</code> on macOS. You can toggle whitespace visibility for the current buffer via <code>Ctrl+Alt+Shift+S</code>
+on Windows, Linux, and BSD, and <code>^⇧S</code> on macOS. Visible spaces are represented by dots,
+and visible tabs are represented by arrows. (The terminal version does not have default key
+bindings for either of these actions.)</p>
+
+<p>The GUI version of Textadept can show small guiding lines based on indentation level, and
+does so by default. You can toggle the visibility of these guides for the current view via
+<code>Ctrl+Alt+Shift+I</code> on Windows, Linux, and BSD, and <code>^⇧I</code> on macOS.</p>
+
+<p>The GUI version of Textadept also allows you to temporarily increase or decrease the font size
+in the current view. The following key bindings apply for this feature:</p>
+
+<ul>
+<li>Increase the view&rsquo;s font size via <code>Ctrl+=</code> on Windows, Linux, and BSD, and <code>⌘=</code> on macOS.</li>
+<li>Decrease the view&rsquo;s font size via <code>Ctrl+-</code> on Windows, Linux, and BSD, and <code>⌘-</code> on macOS.</li>
+<li>Reset the view&rsquo;s font size to its normal value via <code>Ctrl+0</code> on Windows, Linux, and BSD, and
+<code>⌘0</code> on macOS.</li>
+</ul>
+
+
+<hr />
+
+<a name="Adept-Editing"></a>
+<h3>Adept Editing</h3>
+
+<hr />
+
+<p>Textadept implements most of the customary key bindings for navigating text fields on each
+platform, including Bash-style bindings on macOS and in the terminal version. The editor also
+implements most of the usual basic editing key bindings (e.g. undo, redo, cut, copy, paste,
+etc.). All of Textadept&rsquo;s navigation-related key bindings are listed in the &ldquo;Movement&rdquo; section
+of the <a href="api.html#textadept.keys">key bindings list</a>. Textadept&rsquo;s basic editing key bindings are listed in the &ldquo;Edit&rdquo;
+section of that list. (They are also shown in the &ldquo;Edit&rdquo; menu.)</p>
+
+<a name="Brace-Matching-2c--Auto-2d-pair-2c--and-Typeover"></a>
+<h4>Brace Matching, Auto-pair, and Typeover</h4>
+
+<p>Textadept automatically highlights matching brace characters when the caret is over one of them:
+&lsquo;(&rsquo;, &lsquo;)&rsquo;, &lsquo;[&rsquo;, &lsquo;]&rsquo;, &lsquo;{&rsquo;, or &lsquo;}&rsquo;. You can jump to the current character&rsquo;s complement via <code>Ctrl+M</code>
+on Windows, Linux, and BSD, <code>^M</code> on macOS, and <code>M-M</code> in the terminal version. You can add
+highlighting for &lsquo;&lt;&rsquo; and &lsquo;>&rsquo; by modifying <a href="api.html#textadept.editing.brace_matches"><code>textadept.editing.brace_matches</code></a>. For example,
+in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.editing.brace_matches[string.byte('&lt;')] = true
+textadept.editing.brace_matches[string.byte('&gt;')] = true
+</code></pre>
+
+<p><img src="images/matchingbrace.png" alt="Matching Braces" /></p>
+
+<p>Since braces often go together in pairs, Textadept automatically inserts the complement of
+opening brace characters you type, deletes that complement if you press <code>Backspace</code>, and
+moves over the complement if you type it (as opposed to inserting it again). Textadept also
+exhibits this behavior for single and double quote characters (&lsquo;&apos;&rsquo; and &lsquo;&quot;&rsquo;). You
+can configure or disable this behavior by modifying <a href="api.html#textadept.editing.auto_pairs"><code>textadept.editing.auto_pairs</code></a> and
+<a href="api.html#textadept.editing.typeover_chars"><code>textadept.editing.typeover_chars</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>-- Auto-pair and typeover '&lt;' and '&gt;'.
+textadept.editing.auto_pairs[string.byte('&lt;')] = '&gt;'
+textadept.editing.typeover_chars[string.byte('&gt;')] = true
+
+-- Disable auto-pair and typeover.
+textadept.editing.auto_pairs = nil
+textadept.editing.typeover_chars = nil
+</code></pre>
+
+<a name="Word-Highlight"></a>
+<h4>Word Highlight</h4>
+
+<p>Textadept can be configured to automatically highlight all occurrences of the word under
+the caret, or all occurrences of the selected word (e.g. a variable name), by setting
+<a href="api.html#textadept.editing.highlight_words"><code>textadept.editing.highlight_words</code></a>. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>-- Highlight all occurrences of the current word.
+textadept.editing.highlight_words = textadept.editing.HIGHLIGHT_CURRENT
+-- Highlight all occurrences of the selected word.
+textadept.editing.highlight_words = textadept.editing.HIGHLIGHT_SELECTED
+</code></pre>
+
+<p>Pressing <code>Esc</code> clears highlighting. By default, Textadept does not perform any automatic
+highlighting.</p>
+
+<p><img src="images/wordhighlight.png" alt="Word Highlight" /></p>
+
+<a name="Autocompletion-and-Documentation"></a>
+<h4>Autocompletion and Documentation</h4>
+
+<p>Textadept provides buffer-based word completion. It can also autocomplete symbols for programming
+languages and display documentation for functions and other symbols.</p>
+
+<p>You can show word completion candidates for partially-typed words via <code>Ctrl+Enter</code> on Windows,
+Linux, and BSD, <code>^Esc</code> on macOS, and <code>M-Enter</code> in the terminal version. Continuing to type
+changes the suggested completion. Use the arrow keys to navigate within the list and press
+<code>Enter</code> to insert the rest of the selected word. By default, the list of completions comes
+from the current buffer. You can configure Textadept to look in all open buffers by setting
+<a href="api.html#textadept.editing.autocomplete_all_words"><code>textadept.editing.autocomplete_all_words</code></a>. For example, in <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.editing.autocomplete_all_words = true
+</code></pre>
+
+<p><img src="images/wordcompletion.png" alt="Word Completion" /></p>
+
+<p>For languages that support it, you can show symbol completion candidates at the current position
+via <code>Ctrl+Space</code> on Windows, Linux, and BSD, <code>⌥Esc</code> on macOS, and <code>^Space</code> in the terminal
+version.</p>
+
+<p><img src="images/adeptsense_lua.png" alt="Autocomplete Lua" />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="images/adeptsense_string.png" alt="Autocomplete Lua String" /></p>
+
+<p>Also for languages that support it, you can show any known documentation for the current symbol
+via <code>Ctrl+H</code> on Windows, Linux, and BSD, <code>^H</code> on macOS, and <code>M-H</code> or <code>M-S-H</code> in the terminal
+version. Textadept has built-in autocompletion and documentation support for Lua and C, including
+for its own Lua API.</p>
+
+<p><img src="images/adeptsense_doc.png" alt="Documentation" /></p>
+
+<p>Textadept&rsquo;s framework for providing symbol autocompletion and documentation relies on
+<a href="api.html#textadept.editing.autocompleters">autocompleter</a> functions and <a href="api.html#textadept.editing.api_files">API files</a>, which are often supplied by <a href="api.html#_M">language</a>
+<a href="#modules">modules</a>. You can use this framework to write your own autocompletion routines.</p>
+
+<a name="Text-Selections"></a>
+<h4>Text Selections</h4>
+
+<p>Textadept has three kinds of text selections: contiguous, multiple, and rectangular.</p>
+
+<p>You can create contiguous selections as follows:</p>
+
+<ul>
+<li>Make an arbitrary selection anchored at the caret by pressing the arrow keys, home/end, page
+up/down, etc. while holding down the <code>Shift</code> key, or by simply clicking and dragging the mouse.</li>
+<li>The terminal version can also make an arbitrary selection by entering selection mode via <code>^^</code>
+and using normal movement keys. This feature is available since some terminals do not recognize
+<code>Shift</code> with movement keys.  While in selection mode, swap the start and end positions via
+<code>^]</code> in order to alter the selection from its opposite side. Exit selection mode by typing
+text, deleting text, performing an action that changes text, or by pressing <code>^^</code> again.</li>
+<li>Select the current word via <code>Ctrl+Shift+D</code> on Windows, Linux, and BSD, <code>⌘⇧D</code> on macOS, and
+<code>M-S-W</code> in the terminal version. Repeated use of this action selects subsequent occurrences
+of that word as additional (multiple) selections.</li>
+<li>Select the current line via <code>Ctrl+Shift+N</code> on Windows, Linux, and BSD, <code>⌘⇧N</code> on macOS,
+and <code>M-S-N</code> in the terminal version.</li>
+<li>Double click to select a word, and triple-click to select a line.</li>
+<li>Click and optionally drag within the line number margin to select whole lines.</li>
+<li>Select the current paragraph via <code>Ctrl+Shift+P</code> on Windows, Linux, and BSD, <code>⌘⇧P</code> on macOS,
+and <code>M-S-P</code> in the terminal version. Paragraphs are surrounded by one or more blank lines.</li>
+<li>Select all buffer text via <code>Ctrl+A</code> on Windows, Linux, and BSD, <code>⌘A</code> on macOS, and <code>M-A</code>
+in the terminal version.</li>
+<li>Select text between matching delimiters (parentheses, brackets, braces, single quotes,
+double-quotes, and back quotes) via <code>Ctrl+Shift+M</code> on Windows, Linux, and BSD, <code>^⇧M</code> on
+macOS, and <code>M-S-M</code> in the terminal version. Repeated use of this action toggles the selection
+of the delimiters themselves.</li>
+<li>Select between HTML/XML tags via <code>Ctrl+&lt;</code> on Windows, Linux, and BSD, <code>⌘&lt;</code> on macOS, and
+<code>M-&lt;</code> in the terminal version.</li>
+<li>Select an HTML/XML tag via <code>Ctrl+&gt;</code> on Windows, Linux, and BSD, and <code>⌘&gt;</code> on macOS.</li>
+</ul>
+
+
+<p>You can create multiple selections as follows:</p>
+
+<ul>
+<li>Add another selection by holding down <code>Ctrl</code>, clicking, and optionally dragging the mouse
+over a range of text.</li>
+<li>Select as an additional selection the next occurrence of the current word via <code>Ctrl+Shift+D</code>
+on Windows, Linux, and BSD, <code>⌘⇧D</code> on macOS, and <code>M-S-W</code> in the terminal version.</li>
+</ul>
+
+
+<p>Textadept mirrors any typed text at each selection.</p>
+
+<p>You can create a rectangular selection as follows:</p>
+
+<ul>
+<li>Press the arrow keys, home/end, or page up/down, while holding down <code>Alt+Shift</code> on Windows,
+Linux, and BSD, <code>⌥⇧</code> on macOS, and <code>M-S-</code> in the terminal version.</li>
+<li>Click and drag the mouse while holding down the <code>Alt</code> key on Windows, Linux, and BSD, and
+<code>⌥</code> on macOS.</li>
+<li>Click and drag the mouse without holding down any modifiers (thus making a normal, multi-line
+selection), press and hold down the <code>Alt</code> key on Windows, Linux, and BSD, <code>⌥</code> on macOS, and
+<code>M-</code> in the terminal version, and then continue dragging the mouse. This feature is available
+because some window managers in Linux consume <code>Alt+Shift</code> + arrow keys and <code>Alt</code> + mouse drag.</li>
+</ul>
+
+
+<p>You are permitted to create a zero-width rectangular selection that spans multiple lines,
+and for this kind of selection, Textadept mirrors any typed text on all of those lines.</p>
+
+<p><img src="images/rectangularselection.png" alt="Rectangular Selection" />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="images/rectangularselection2.png" alt="Rectangular Edit" /></p>
+
+<p>You can also copy rectangular blocks of text and paste them into rectangular blocks of the
+same size.</p>
+
+<p><strong>Note:</strong> macOS does not support the direct pasting rectangular selections. Instead, use the
+<a href="#lua-command-entry">Lua Command Entry</a> and enter <code>replace_rectangular(ui.clipboard_text)</code>
+after copying a block of text.</p>
+
+<a name="Text-Transformations"></a>
+<h4>Text Transformations</h4>
+
+<p>Textadept can apply many different transformations to the current word, line, and selected text.</p>
+
+<ul>
+<li>Enclose the current word or selected text within delimiters like parentheses, braces, brackets,
+single quotes, double quotes, or HTML/XML tags using the key bindings listed in the &ldquo;Edit >
+Selection&rdquo; submenu.</li>
+<li>Convert the selected text to upper or lower case via <code>Ctrl+Alt+U</code> or <code>Ctrl+Alt+Shift+U</code>,
+respectively, on Windows, Linux, and BSD; <code>^U</code> or <code>^⇧U</code>, respectively, on macOS; and <code>M-^U</code>
+or <code>M-^L</code> in the terminal version.</li>
+<li>Increase or decrease the indentation of the selected lines via <code>Tab</code> or <code>Shift+Tab</code>,
+respectively, on Windows, Linux, and BSD; <code>⇥</code> or <code>⇧⇥</code>, respectively on macOS; and <code>Tab</code>
+or <code>S-Tab</code> in the terminal version. You do not have to select whole lines; selecting any part
+of a line is sufficient.</li>
+<li>Move the current or selected line(s) up or down via <code>Ctrl+Shift+Up</code> or <code>Ctrl+Shift+Down</code>,
+respectively, on Windows, Linux, and BSD; <code>^⇧⇡</code> or <code>^⇧⇣</code>, respectively, on macOS;
+and <code>S-^Up</code> or <code>S-^Down</code> in the terminal version. You do not have to select whole lines;
+selecting any part of a line is sufficient.</li>
+<li>Comment out code on the current or selected line(s) via <code>Ctrl+/</code> on Windows, Linux, and BSD,
+<code>⌘/</code> on macOS, and <code>M-/</code> in the terminal version. You do not have to select whole lines;
+selecting any part of a line is sufficient.</li>
+</ul>
+
+
+<p>You can auto-enclose selected text between any typed punctuation character (taking into account
+<a href="api.html#textadept.editing.auto_pairs"><code>textadept.editing.auto_pairs</code></a>) by setting <a href="api.html#textadept.editing.auto_enclose"><code>textadept.editing.auto_enclose</code></a>. For example,
+in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.editing.auto_enclose = true
+</code></pre>
+
+<a name="Navigate-Through-History"></a>
+<h4>Navigate Through History</h4>
+
+<p>Textadept records buffer positions within views over time and allows for navigating through
+that history. Navigate backward or forward via <code>Alt+,</code> or <code>Alt+.</code>, respectively, on Windows,
+Linux, and BSD; <code>^,</code> or <code>^.</code>, respectively, on macOS; and <code>M-,</code> or <code>M-.</code>, respectively, in the
+terminal version.</p>
+
+<a name="Goto-Line"></a>
+<h4>Goto Line</h4>
+
+<p>You can jump to a specific line in the current buffer via <code>Ctrl+J</code> on Windows, Linux, and BSD,
+<code>⌘J</code> on macOS, and <code>^J</code> in the terminal version. Enter the line number to jump to in the
+prompt, and press <code>Enter</code> or click <code>OK</code>.</p>
+
+<a name="Bookmarks"></a>
+<h4>Bookmarks</h4>
+
+<p>Bookmarks are markers attached to lines of interest. They move in sync with the lines they were
+added to as buffer text is inserted and deleted. Bookmarks show up in the left-hand margin
+after line numbers. Textadept allows you to bookmark lines and jump back to them later. The
+following key bindings apply for bookmarks:</p>
+
+<ul>
+<li>Toggle a bookmark on the current line via <code>Ctrl+F2</code> on Windows, Linux, and BSD, <code>⌘F2</code>
+on macOS, and <code>F1</code> in the terminal version.</li>
+<li>Jump to the next bookmarked line via <code>F2</code>.</li>
+<li>Jump to the previously bookmarked line via <code>Shift+F2</code> on Windows, Linux, and BSD, <code>⇧F2</code>
+on macOS, and <code>F3</code> in the terminal version.</li>
+<li>Jump to the bookmarked line selected from a list via <code>Alt+F2</code> on Windows, Linux, and BSD,
+<code>⌥F2</code> on macOS, and <code>F4</code> in the terminal version.</li>
+<li>Clear all bookmarks in the current buffer via <code>Ctrl+Shift+F2</code> on Windows, Linux, and BSD,
+<code>⌘⇧F2</code> on macOS, and <code>F6</code> in the terminal version.</li>
+</ul>
+
+
+<a name="Macros"></a>
+<h4>Macros</h4>
+
+<p>Macros allow you to quickly record a series of edits and play them back without having to write
+a custom Lua script. The following key bindings apply for macros:</p>
+
+<ul>
+<li>Start recording a macro via <code>F9</code>.</li>
+<li>Stop recording a macro via <code>Shift+F9</code> on Windows, Linux, and BSD, <code>⇧F9</code> on macOS, and <code>F10</code>
+in the terminal version.</li>
+<li>Play back the most recently recorded macro via <code>Alt+F9</code> on Windows, Linux, and BSD, <code>⌥F9</code>
+on macOS, and <code>F12</code> in the terminal version.</li>
+</ul>
+
+
+<p>You can use the &ldquo;Tools > Macros&rdquo; menu to save the most recently recorded macro to a file,
+and to load one for playback on demand.</p>
+
+<a name="Snippets"></a>
+<h4>Snippets</h4>
+
+<p>Snippets are dynamic text templates that can be inserted into the buffer on demand. They
+are composed of any combination of plain text, placeholders for interactive input, mirrors
+and transforms for interactive input, and arbitrary Lua and Shell code. Snippets eliminate
+the need for typing repetitive code constructs like class definitions, getters and setters,
+control structures, API calls, and more.</p>
+
+<p><img src="images/snippet.png" alt="Snippet" />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="images/snippet2.png" alt="Snippet Expanded" /></p>
+
+<p>A snippet has a trigger word associated with snippet text in the <a href="api.html#_G.snippets"><code>snippets</code></a>
+table. Language-specific snippets are in a subtable assigned to their language&rsquo;s lexer name, and
+are often supplied by <a href="api.html#_M">language</a> <a href="#modules">modules</a>. Snippets may also be the contents of files
+in a snippet directory, with file names being the trigger word. The <a href="api.html#textadept.snippets">snippets documentation</a>
+describes snippets and their contents in more detail.</p>
+
+<p>The following key bindings apply for snippets:</p>
+
+<ul>
+<li>Insert a snippet from a list of available snippets via <code>Ctrl+Shift+K</code> on Windows, Linux, and
+BSD, <code>⌥⇧⇥</code> on macOS, and <code>M-S-K</code> in the terminal version.  Typing part of a snippet
+trigger in the dialog filters the list, with spaces being wildcards. The arrow keys move
+the selection up and down. Pressing <code>Enter</code>, selecting <code>OK</code>, or double-clicking on a snippet
+inserts it into the current buffer. (The terminal requires pressing <code>Enter</code>.)</li>
+<li>Show completion candidates for a partially-typed snippet trigger word via <code>Ctrl+K</code> on Windows,
+Linux, and BSD, <code>⌥⇥</code> on macOS, and <code>M-K</code> in the terminal version. Continuing to type
+changes the suggested completion. Use the arrow keys to navigate within the list and press
+<code>Enter</code> to insert the rest of the trigger word.</li>
+<li>Insert a snippet based on the trigger word behind the caret via <code>Tab</code> on Windows, Linux,
+BSD, and in the terminal version, and <code>⇥</code> on macOS. You can insert another snippet within
+an active snippet. A previously active snippet will pick up where it left off after a nested
+snippet finishes.</li>
+<li>Navigate to the next placeholder in the current snippet via <code>Tab</code> on Windows, Linux, BSD,
+and in the terminal version, and <code>⇥</code> on macOS.</li>
+<li>Navigate to the previous placeholder in the current snippet via <code>Shift+Tab</code> on Windows, Linux,
+and BSD, <code>⇧⇥</code> on macOS, and <code>S-Tab</code> in the terminal version.  If there is no previous
+placeholder, the current snippet is canceled.</li>
+<li>Cancel the current snippet via <code>Esc</code>.</li>
+</ul>
+
+
+<a name="Code-Folding"></a>
+<h4>Code Folding</h4>
+
+<p>Textadept can temporarily hide blocks of code in supported languages. Markers in the margin to
+the left of code denote fold points. Clicking on those markers toggles folding. You can toggle
+folding for the current block via <code>Ctrl+*</code> on Windows, Linux, and BSD, <code>⌘*</code> on macOS, and
+<code>M-*</code> in the terminal version.</p>
+
+<p><img src="images/folding.png" alt="Folding" /></p>
+
+<a name="Virtual-Space"></a>
+<h4>Virtual Space</h4>
+
+<p>Textadept normally constrains the caret to remain within text lines. Enabling virtual space
+allows you to move the caret into the space beyond the ends of lines. Toggle virtual space via
+<code>Ctrl+Alt+Shift+V</code> on Windows, Linux, and BSD, and <code>^⇧V</code> in macOS. (The terminal version does
+not have a default key binding for toggling virtual space.)</p>
+
+<a name="Key-Bindings"></a>
+<h4>Key Bindings</h4>
+
+<p>Key bindings are simply commands (Lua functions) assigned to key sequences in the <a href="api.html#keys"><code>keys</code></a>
+table. Key sequences are composed of an ordered combination of modifier keys followed by either
+the key&rsquo;s inserted character or, if no such character exists, the string representation of
+the key according to <a href="api.html#keys.KEYSYMS"><code>keys.KEYSYMS</code></a>. Language-specific keys are in a subtable assigned to
+their language&rsquo;s lexer name, and are often supplied by <a href="api.html#_M">language</a> <a href="#modules">modules</a>. Key
+sequences can also be assigned tables of key bindings to create key chains (e.g. Emacs <code>C-x</code>
+prefix). Key bindings can be grouped into modes such that while a mode is active, Textadept
+ignores all key bindings outside that mode until the mode is unset (e.g. Vim-style modal
+editing). The <a href="api.html#keys">keys documentation</a> describes all of this in more detail.</p>
+
+<hr />
+
+<a name="Compile-2c--Run-2c--Build-2c--and-Test"></a>
+<h3>Compile, Run, Build, and Test</h3>
+
+<hr />
+
+<p>Textadept knows most of the commands that compile and/or run code in source files. It also
+knows some of the commands that build projects, and you can tell the editor how to run your
+project&rsquo;s test suite. Textadept recognizes many of the warning and error messages emitted by
+those commands and marks them as they occur in compile/run/build/test output. Double-clicking
+on a line with a warning or error jumps to its source.</p>
+
+<p>The following key bindings apply for compiling and running source files, and for building
+projects and running tests:</p>
+
+<ul>
+<li>Compile the current file via <code>Ctrl+Shift+R</code> on Windows, Linux, and BSD, <code>⌘⇧R</code> on macOS,
+and <code>M-^R</code> in the terminal version.</li>
+<li>Run the current file via <code>Ctrl+R</code> on Windows, Linux, and BSD, <code>⌘R</code> on macOS, and <code>^R</code>
+in the terminal version.</li>
+<li>Set, using an interactive dialog, the command line arguments for the current file&rsquo;s compile
+and run commands via <code>Ctrl+Shift+A</code> on Windows, Linux, and BSD, and <code>⌘⇧A</code> on macOS. (The
+terminal version does not have a default key binding for setting command line arguments.) Enter
+the command line arguments for each command and press <code>Enter</code> or click <code>OK</code>.</li>
+<li>Build the current project via <code>Ctrl+Shift+B</code> on Windows, Linux, and BSD, <code>⌘⇧B</code> on macOS,
+and <code>M-^B</code> in the terminal version.</li>
+<li>Run tests for the current project via <code>Ctrl+Shift+T</code> on Windows, Linux, and BSD, <code>⌘⇧T</code>
+on macOS, and <code>M-^T</code> in the terminal version.</li>
+<li>Stop the currently running compile, run, build, or test process via <code>Ctrl+Shift+X</code> on Windows,
+Linux, and BSD, <code>⌘⇧X</code> on macOS, and <code>M-^X</code> in the terminal version.</li>
+<li>Jump to the source of the next recognized warning or error via <code>Ctrl+Alt+E</code> on Windows, Linux,
+and BSD, <code>^⌘E</code> on macOS, and <code>M-X</code> in the terminal version.</li>
+<li>Jump to the source of the previously recognized warning or error via <code>Ctrl+Alt+Shift+E</code>
+on Windows, Linux, and BSD, <code>^⌘⇧E</code> on macOS, and <code>M-S-X</code> in the terminal version.</li>
+<li>Jump to the source of the recognized warning or error on the current line via <code>Enter</code>.</li>
+</ul>
+
+
+<p><img src="images/runerror.png" alt="Runtime Error" /></p>
+
+<p>When you execute a compile, run, build, or test command, that command&rsquo;s output is printed to
+a temporary buffer in real-time. You can configure Textadept to print output in the background
+by setting <a href="api.html#textadept.run.run_in_background"><code>textadept.run.run_in_background</code></a>.  For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.run.run_in_background = true
+</code></pre>
+
+<p>You can change or add compile, run, build, and test commands by modifying
+the <a href="api.html#textadept.run.compile_commands"><code>textadept.run.compile_commands</code></a>, <a href="api.html#textadept.run.run_commands"><code>textadept.run.run_commands</code></a>,
+<a href="api.html#textadept.run.build_commands"><code>textadept.run.build_commands</code></a>, and <a href="api.html#textadept.run.test_commands"><code>textadept.run.test_commands</code></a> tables,
+respectively. You can add Lua patterns that recognize warning and error output by modifying the
+<a href="api.html#textadept.run.error_patterns"><code>textadept.run.error_patterns</code></a> table. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>textadept.run.compile_commands.foo = 'foo "%f"'
+textadept.run.run_commands.foo = './"%e"'
+textadept.run.error_patterns.foo = {'^(.-):(%d+): (.+)$'} -- bar.foo:1: oops
+
+textadept.run.build_commands['/path/to/project'] = 'make -C src -j4'
+textadept.run.test_commands['/path/to/project'] = 'lua tests.lua'
+</code></pre>
+
+<p><strong>Tip:</strong> you can set compile and run commands on a per-filename basis, and these commands can
+contain arguments so that you do not have to invoke &ldquo;Tools > Set Arguments&hellip;&rdquo;</p>
+
+<hr />
+
+<a name="Modules"></a>
+<h3>Modules</h3>
+
+<hr />
+
+<p>Modules are packages of Lua code that provide functionality for Textadept. Most of the
+editor&rsquo;s features come from individual modules (see Textadept&rsquo;s <em>core/</em> and <em>modules/</em>
+directories). Textadept can load modules when the application starts up, or it can load modules
+on-demand in response to events. Once a module is loaded, it persists in memory and is never
+unloaded. Textadept attempts to load, in order, a given module from the following locations:</p>
+
+<ol>
+<li>Your <em>~/.textadept/modules/</em> directory.</li>
+<li>Textadept&rsquo;s <em>modules/</em> directory.</li>
+</ol>
+
+
+<p><strong>Tip:</strong> placing modules in your user data directory avoids the possibility of you overwriting
+them when you update Textadept. These modules also take precedence over the ones installed
+with Textadept.</p>
+
+<p>Textadept will only load modules it is explicitly told to load (e.g. from your
+<em>~/.textadept/init.lua</em>). For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>local ctags = require('ctags')
+ctags.f12 = ctags.goto_tag
+
+events.connect(events.LEXER_LOADED, function(name)
+  if name == 'lua' then require('lua.extras') end
+end)
+</code></pre>
+
+<p>The only exception to this auto-loading prohibition is modules that have the same name as a
+lexer language. These so-called &ldquo;<a href="api.html#_M">language modules</a>&rdquo; will be automatically loaded when an
+appropriate source file is opened, or when the module&rsquo;s associated lexer is loaded for a buffer.</p>
+
+<p><strong>Note:</strong> lexer language names are typically the names of lexer files in your
+<em>~/.textadept/lexers/</em> directory and Textadept&rsquo;s <em>lexers/</em> directory.</p>
+
+<a name="Developing-Modules"></a>
+<h4>Developing Modules</h4>
+
+<p>Modules follow the Lua package model: a module is either a single Lua file or a group of Lua files
+in a directory that contains an <em>init.lua</em> file (which is the module&rsquo;s entry point). The name
+of the module is its file name or directory name, respectively. Here are some basic guidelines
+for developing modules and some things to keep in mind:</p>
+
+<ul>
+<li>Modules should return a table of functions and fields that are defined locally, rather than
+globally. (This is standard Lua practice.) That way, the construct <code>local foo = require('foo')</code>
+behaves as expected.</li>
+<li>Modules should not define global variables, as all modules share the same Lua state.</li>
+<li>Only <a href="api.html#_M">language modules</a> should be named after lexer languages.</li>
+<li>Modules must not call any functions that create buffers and views (e.g.  <code>ui.print()</code>,
+<code>io.open_file()</code>, and <code>buffer.new()</code>) at file-level scope.  Buffers and views can only be
+created within functions assigned to keys, associated with menu items, or connected to events.</li>
+<li>Additional documentation on creating language modules can be found in the the <a href="api.html#_M">language
+modules</a> documentation.</li>
+</ul>
+
+
+<p><strong>Tip:</strong> you do not need to have a language module in order to have language-specific editing
+features. You can simply put language-specific features inside an <a href="api.html#events.LEXER_LOADED"><code>events.LEXER_LOADED</code></a>
+event handler. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>-- Auto-pair and brace-match '&lt;' and '&gt;' only in HTML and XML files.
+events.connect(events.LEXER_LOADED, function(name)
+  local is_markup = name == 'html' or name == 'xml'
+  textadept.editing.auto_pairs[string.byte('&lt;')] = is_markup and '&gt;'
+  textadept.editing.brace_matches[string.byte('&lt;')] = is_markup
+  textadept.editing.brace_matches[string.byte('&gt;')] = is_markup
+end)
+</code></pre>
+
+<hr />
+
+<a name="Themes"></a>
+<h3>Themes</h3>
+
+<hr />
+
+<p>Themes customize Textadept&rsquo;s look and feel. The editor comes with three built-in themes:
+&ldquo;light&rdquo;, &ldquo;dark&rdquo;, and &ldquo;term&rdquo;. The default theme for the GUI and terminal versions is &ldquo;light&rdquo;
+and &ldquo;term&rdquo;, respectively.</p>
+
+<p><span style="display: block; clear: right;"></span></p>
+
+<p><img src="images/lighttheme.png" alt="Light Theme" />
+&nbsp;&nbsp;
+<img src="images/darktheme.png" alt="Dark Theme" />
+&nbsp;&nbsp;
+<img src="images/termtheme.png" alt="Term Theme" /></p>
+
+<p>A theme consists of a single Lua file, and is typically responsible for:</p>
+
+<ul>
+<li>Defining the <a href="api.html#lexer.colors">colors</a> and <a href="api.html#lexer.styles">text display settings</a> (styles) used in syntax highlighting.</li>
+<li>Assigning colors to various UI elements such as the caret, text selections, margin markers,
+and documentation popups.</li>
+<li>Specifying what symbols to use for margin markers and how to display visual elements like
+the brace match indicator and snippet placeholders.</li>
+<li>Specifying the find &amp; replace pane entry font name and size.</li>
+</ul>
+
+
+<p>Textadept attempts to load, in order, a given theme from the following locations:</p>
+
+<ol>
+<li>Your <em>~/.textadept/themes/</em> directory.</li>
+<li>Textadept&rsquo;s <em>themes/</em> directory.</li>
+</ol>
+
+
+<p><strong>Tip:</strong> placing themes in your user data directory avoids the possibility of you overwriting
+them when you update Textadept. These themes also take precedence over the ones installed
+with Textadept.</p>
+
+<p>You can set Textadept&rsquo;s theme using <a href="api.html#view.set_theme"><code>view.set_theme()</code></a>. You can also tweak a theme&rsquo;s styles
+on a per-language basis. For example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>if not CURSES then
+  view:set_theme('light', {font = 'DejaVu Sans Mono', size = 12})
+end
+
+-- Color Java functions black instead of the default orange.
+events.connect(events.LEXER_LOADED, function(name)
+  if name ~= 'java' then return end
+  local default_fore = view.style_fore[view.STYLE_DEFAULT]
+  view.style_fore[buffer:style_of_name('function')] = default_fore
+end)
+</code></pre>
+
+<p><strong>Tip:</strong> you can experiment with themes without having to restart Textadept by using the
+<a href="api.html#reset"><code>reset()</code></a> command in the <a href="#lua-command-entry">Lua Command Entry</a>.  Once you make changes
+to either your <em>~/.textadept/init.lua</em> or theme file, issuing the <code>reset</code> command will reload
+your changes.</p>
+
+<p>The widgets in the GUI version of Textadept cannot be themed using Lua theme files. Instead, you
+must use <a href="https://www.gnome-look.org/browse?cat=135&amp;ord=latest">GTK Themes</a> or <a href="https://docs.gtk.org/gtk3/css-overview.html">GTK CSS</a>, which are part of the GUI toolkit Textadept uses. The
+exception to this is find &amp; replace entry font, which can be changed. For Windows and macOS,
+place themes in Textadept&rsquo;s <em>share/themes/</em> directory and edit <em>etc/gtk-3.0/settings.ini</em>
+to set the <code>gtk-theme-name</code> to the directory name of your theme.</p>
+
+<hr />
+
+<a name="Scripting"></a>
+<h3>Scripting</h3>
+
+<hr />
+
+<p>Nearly every aspect of Textadept can be scripted, or controlled, using Lua.  Textadept contains
+its own internal copy of <a href="https://www.lua.org/manual/5.3">Lua 5.3</a>, which is largely unmodified compared to the official Lua
+release. The main difference is that Textadept&rsquo;s Lua does not have any compatibility options
+turned on for previous versions of Lua.</p>
+
+<p>Being an event-driven application, Textadept simply responds to input like key presses,
+mouse clicks, and state changes by running Lua code (more specifically, executing Lua
+functions). For example, when you press a key, Textadept emits an <code>events.KEYPRESS</code> event, which
+its <em>core/keys.lua</em> is listening for. When a sequence like <code>Ctrl+O</code> on Windows, Linux, and BSD
+is recognized, <em>core/keys.lua</em> looks up which Lua function is assigned to the <code>keys['ctrl+o']</code>
+key. By default, it is <code>io.open_file()</code>, so that function is executed and the user is prompted
+for a file to open. You could bind a different function to that key and Textadept will duly
+execute it. Similarly, when the editor opens a file via <code>io.open_file()</code>, that function emits a
+<code>events.FILE_OPENED</code> event, which <em>modules/textadept/file_types.lua</em> is listening for. When a
+Lua file is opened, <em>modules/textadept/file_types.lua</em> designates the &ldquo;lua&rdquo; lexer to perform
+syntax highlighting on that file and also loads the Lua language module if it has not already
+been loaded. You could also listen for <code>events.FILE_OPENED</code> in your <em>~/.textadept/init.lua</em>
+and perform your own action, such as loading some project-specific tools for editing that file.</p>
+
+<p>Your <em>~/.textadept/init.lua</em> is the entry point to scripting Textadept. In this file you can set
+up custom key bindings, menu items, and event handlers that will perform custom actions. Here
+are some ideas:</p>
+
+<ul>
+<li>Define custom key bindings and menu items that manipulate buffer contents via the extensive
+<a href="api.html#buffer"><code>buffer</code></a> API.</li>
+<li>Extend Textadept&rsquo;s File menu with a menu item that prompts for a commit message using an
+<a href="api.html#ui.dialogs">interactive dialog</a>, and then invokes a shell command that commits the current file to
+version control using the provided message.</li>
+<li>Listen for the <code>events.FILE_SAVED</code> <a href="api.html#events">event</a> and <a href="api.html#os.spawn">spawn</a> an asynchronous process that runs
+a syntax checker, linter, or formatter on a source file when it is saved.</li>
+<li>Start searches with the word under the caret by substituting the &ldquo;Search > Find&rdquo; menu item
+and key binding functions with a custom function that pre-populates <code>ui.find.find_entry_text</code>
+before calling <code>ui.find.focus()</code> to show the find &amp; replace pane.</li>
+<li>Auto-save files as you switch between buffers by listening for the <code>events.BUFFER_BEFORE_SWITCH</code>
+event and calling <code>buffer:save()</code> for buffers that have a <code>buffer.filename</code>. In the GUI version,
+you can even auto-save on a timer via <code>timeout()</code>.</li>
+<li>Overload Textadept&rsquo;s find &amp; replace capabilities to use Lua patterns instead of regex by
+reacting to <code>events.FIND</code> and <code>events.REPLACE</code> before Textadept can, and then determining
+whether or not the editor&rsquo;s default routines should handle those events.</li>
+</ul>
+
+
+<p>Textadept&rsquo;s <a href="api.html">Lua API</a> is extensively documented and serves as the ultimate resource when it
+comes to scripting the editor. The claim &ldquo;Textadept gives you complete control over nearly the
+entire application using Lua&rdquo; is not an exaggeration!</p>
+
+<p>If you are looking for a more structured scripting resource, <a href="book.html">Textadept Quick Reference</a>
+contains a wealth of knowledge on how to script and configure Textadept. It groups the editor&rsquo;s
+rich API into a series of tasks in a convenient and easy-to-use manner.</p>
+
+<a name="Generate-Autocompletion-and-Documentation-Files"></a>
+<h4>Generate Autocompletion and Documentation Files</h4>
+
+<p>You can generate for use with Textadept <a href="#autocompletion-and-documentation">autocompletion and
+documentation</a> files for your Lua modules. Simply run
+<a href="https://keplerproject.github.com/luadoc">LuaDoc</a> with Textadept&rsquo;s <em>modules/lua/tadoc.lua</em> doclet. For example:</p>
+
+<pre><code>cd _HOME
+luadoc -d [output_path] --doclet modules/lua/tadoc [/path/to/module(s)]
+</code></pre>
+
+<p>where <code>_HOME</code> is the path where you installed Textadept and <code>output_path</code> is an arbitrary path
+to write the generated <em>tags</em> and <em>api</em> files to. (Note that LuaDoc does not like absolute paths
+to doclets, so running <code>luadoc</code> from <code>_HOME</code> is one way to get it to work.) You can then have
+Textadept load and use those autocompletion and documentation files when editing Lua code. For
+example, in your <em>~/.textadept/init.lua</em>:</p>
+
+<pre><code>local loaded_tags = false
+events.connect(events.LEXER_LOADED, function(name)
+  if name ~= 'lua' or loaded_tags then return end
+  _M.lua.tags[#_M.lua.tags + 1] = '/path/to/tags'
+  loaded_tags = true
+end)
+table.insert(textadept.editing.api_files.lua, '/path/to/api')
+</code></pre>
+
+<hr />
+
+<a name="Compiling"></a>
+<h3>Compiling</h3>
+
+<hr />
+
+<p>Textadept is a bit unusual in that building it is only supported on Linux and BSD, or within a
+<a href="https://www.docker.com">Docker</a> <a href="https://github.com/users/orbitalquark/packages/container/textadept-build">image</a>. The application is cross-compiled for Windows and macOS from Linux. While
+it is certainly possible to compile Textadept natively on those platforms, it is simply not
+supported in any official capacity.</p>
+
+<a name="Requirements"></a>
+<h4>Requirements</h4>
+
+<p>The requirements for compiling Textadept on Linux or BSD should be readily available from a
+package manager. The requirements for cross-compiling Textadept for Windows from Linux should
+also be easily obtainable.</p>
+
+<p>Linux requirements:</p>
+
+<ul>
+<li><a href="https://gcc.gnu.org">GNU C compiler</a> (<em>gcc</em>) 7.1+ (circa mid-2017)</li>
+<li><a href="https://www.gnu.org/software/make">GNU Make</a> (<em>make</em>)</li>
+<li><a href="https://www.gtk.org/download/linux.php">GTK</a> 3 development libraries for the GUI version (GTK 2.24 is also supported)</li>
+<li><a href="https://invisible-island.net/ncurses/#download_ncurses">ncurses</a>(w) development libraries (wide character support) for the terminal version</li>
+<li><em><strong>OR</strong></em></li>
+<li><a href="https://www.docker.com">Docker</a></li>
+</ul>
+
+
+<p><strong>Note:</strong> on Ubuntu for example, these dependencies would be provided by the <code>build-essential</code>,
+<code>libgtk-3-dev</code> (or <code>libgtk2.0-dev</code>), <code>libncurses-dev</code>, and <code>docker.io</code> packages.</p>
+
+<p>BSD requirements:</p>
+
+<ul>
+<li><a href="https://gcc.gnu.org">GNU C compiler</a> (<em>gcc</em>) 7.1+ or <a href="https://clang.llvm.org">Clang</a> 4.0+</li>
+<li><a href="https://www.gnu.org/software/make">GNU Make</a> (<em>gmake</em>)</li>
+<li><a href="https://www.freedesktop.org/wiki/Software/pkg-config">pkg-config</a></li>
+<li><a href="https://www.gnu.org/software/libiconv">libiconv</a></li>
+<li><a href="https://www.gtk.org/download/linux.php">GTK</a> 3 development libraries for the GUI version (GTK 2.24 is also supported)</li>
+<li><a href="https://invisible-island.net/ncurses/#download_ncurses">ncurses</a>(w) development libraries (wide character support) for the terminal version</li>
+</ul>
+
+
+<p>Windows cross-compiling requirements:</p>
+
+<ul>
+<li><a href="http://mingw-w64.org">mingw-w64</a> 5.0+ with GCC 7.1+</li>
+<li><em><strong>OR</strong></em></li>
+<li><a href="https://www.docker.com">Docker</a></li>
+</ul>
+
+
+<p><strong>Note:</strong> on Ubuntu for example, the compiler dependency would be provided by the <code>gcc-mingw-w64</code>
+and <code>g++-mingw-w64</code> packages.</p>
+
+<p>macOS cross-compiling requirements:</p>
+
+<ul>
+<li><a href="https://github.com/tpoechtrager/osxcross">OSX cross toolchain</a> with <a href="https://clang.llvm.org">Clang</a> 4.0+</li>
+<li><em><strong>OR</strong></em></li>
+<li><a href="https://www.docker.com">Docker</a></li>
+</ul>
+
+
+<p><strong>Note:</strong> Textadept&rsquo;s <em>src/Dockerfile</em> contains an example of how to build an OSX cross toolchain.</p>
+
+<a name="Compiling"></a>
+<h4>Compiling</h4>
+
+<p>Textadept is built from its <em>src/</em> directory and binaries are placed in the application&rsquo;s root
+directory. The general procedure is to have Textadept build its dependencies first, and then
+its binaries. Textadept is self-contained, meaning you do not have to install it; it can run
+from its current location.</p>
+
+<p>The following table provides a brief summary of <code>make</code> rules for building Textadept on Linux
+and BSD. (On BSD, substitute <code>make</code> with <code>gmake</code>.)</p>
+
+<table>
+<thead>
+<tr>
+<th>Command </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>make deps</code> </td>
+<td> Downloads and builds all of Textadept&rsquo;s core dependencies</td>
+</tr>
+<tr>
+<td><code>make deps NIGHTLY=1</code> </td>
+<td> Optionally downloads and builds bleeding-edge dependencies</td>
+</tr>
+<tr>
+<td><code>make</code> </td>
+<td> Builds Textadept, provided all dependencies are in place</td>
+</tr>
+<tr>
+<td><code>make GTK2=1</code> </td>
+<td> Builds Textadept using GTK 2.x instead of GTK 3</td>
+</tr>
+<tr>
+<td><code>make DEBUG=1</code> </td>
+<td> Optionally builds Textadept with debug symbols</td>
+</tr>
+<tr>
+<td><code>make install</code> </td>
+<td> Optionally installs Textadept (to <em>/usr/local</em> by default)</td>
+</tr>
+<tr>
+<td><code>make textadept</code> </td>
+<td> Builds only the GUI version of Textadept</td>
+</tr>
+<tr>
+<td><code>make curses</code> </td>
+<td> Builds only the terminal version of Textadept</td>
+</tr>
+<tr>
+<td><code>make curses install</code></td>
+<td> Optionally installs the terminal version of Textadept</td>
+</tr>
+<tr>
+<td><code>make uninstall</code> </td>
+<td> Uninstalls Textadept (from <em>/usr/local</em> by default)</td>
+</tr>
+<tr>
+<td><code>make clean</code> </td>
+<td> Deletes all compiled files, leaving only source files</td>
+</tr>
+<tr>
+<td><code>make clean-deps</code> </td>
+<td> Deletes all unpacked dependencies, leaving only downloads</td>
+</tr>
+<tr>
+<td><code>make win-deps</code> </td>
+<td> Downloads and builds Textadept&rsquo;s Windows dependencies</td>
+</tr>
+<tr>
+<td><code>make win</code> </td>
+<td> Cross-compiles Textadept for Windows</td>
+</tr>
+<tr>
+<td><code>make osx-deps</code> </td>
+<td> Downloads and builds Textadept&rsquo;s macOS dependencies</td>
+</tr>
+<tr>
+<td><code>make osx</code> </td>
+<td> Cross-compiles Textadept for macOS</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>If you want to install Textadept into a non-standard location, you can specify that location
+using the <code>DESTDIR</code> variable. For example:</p>
+
+<pre><code>make install DESTDIR=/prefix/to/install/to
+</code></pre>
+
+<p><strong>Linux and BSD note:</strong> if any of Textadept&rsquo;s dependencies are installed under a prefix that your
+compiler flags do not include by default (e.g. <em>/usr/local/</em>), you will have to run something like:</p>
+
+<pre><code>make CFLAGS="-I/usr/local/include" CXXFLAGS="-I/usr/local/include -L/usr/local/lib"
+</code></pre>
+
+<p>Also, if you want to compile with Clang, you will have to run something like:</p>
+
+<pre><code>make CC=cc CXX=c++
+</code></pre>
+
+<a name="Compiling-using-Docker"></a>
+<h5>Compiling using Docker</h5>
+
+<p>You can use <a href="https://www.docker.com">Docker</a> to build Textadept for Windows, macOS, or Linux. The <a href="https://github.com/users/orbitalquark/packages/container/textadept-build">image</a> required
+to do so is about 3GB in size. For example:</p>
+
+<pre><code>localhost$ docker pull ghcr.io/orbitalquark/textadept-build:v2.0
+localhost$ docker run -t -i -v /path/to/textadept:/ta -w /ta/src \
+  ghcr.io/orbitalquark/textadept-build:v2.0
+container# make deps
+container# make
+container# exit
+</code></pre>
+
+<p>If you prefer to build your own Docker image instead of pulling one, you can run <code>docker build .</code>
+from Textadept&rsquo;s <em>src/</em> directory, which contains the relevant <em>Dockerfile</em>.</p>
+
+<p>You can issue within the container any of the build commands given in the previous table,
+though the install commands are meaningless.</p>
+
+<p><strong>Linux note:</strong> if, when running one of the Linux binaries produced, you get an error like
+<code>/&lt;path&gt;/libstdc++.so.6: version 'GLIBCXX_&lt;version&gt;' not found</code>, then try compiling with the
+following flags:</p>
+
+<pre><code>container# make CXXFLAGS="-0s -std=c++17 -static-libstdc++"
+</code></pre>
+
+<p>If you still get an error, this time like <code>/&lt;path&gt;/libc.so.6: version 'GLIBC_&lt;version&gt;' not
+found</code>, then you will have to compile Textadept manually without Docker.</p>
+
+<hr />
+
+<a name="Appendix"></a>
+<h3>Appendix</h3>
+
+<hr />
+
+<a name="Regex-and-Lua-Pattern-Syntax"></a>
+<h4>Regex and Lua Pattern Syntax</h4>
+
+<p>The following table outlines Regex and Lua Pattern syntax:</p>
+
+<table>
+<thead>
+<tr>
+<th>Regex </th>
+<th> Lua </th>
+<th> Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>. </td>
+<td> . </td>
+<td> Matches any character</td>
+</tr>
+<tr>
+<td>[[:alpha:]] </td>
+<td>%a </td>
+<td> Matches any letter</td>
+</tr>
+<tr>
+<td>\d </td>
+<td> %d </td>
+<td> Matches any digit</td>
+</tr>
+<tr>
+<td>[[:lower:]] </td>
+<td> %l </td>
+<td> Matches any lower case character</td>
+</tr>
+<tr>
+<td>[[:punct:]] </td>
+<td> %p </td>
+<td> Matches any punctuation character</td>
+</tr>
+<tr>
+<td>\s </td>
+<td> %s </td>
+<td> Matches any space character</td>
+</tr>
+<tr>
+<td>[[:upper:]] </td>
+<td> %u </td>
+<td> Matches any upper case character</td>
+</tr>
+<tr>
+<td>\w </td>
+<td> %w </td>
+<td> Matches any alphanumeric character (Regex includes &lsquo;_&rsquo;)</td>
+</tr>
+<tr>
+<td>[[:xdigit:]] </td>
+<td> %x </td>
+<td> Matches any hexadecimal digit</td>
+</tr>
+<tr>
+<td>[<em>set</em>] </td>
+<td> [<em>set</em>] </td>
+<td> Matches any character in <em>set</em>, including ranges like A-Z</td>
+</tr>
+<tr>
+<td>[^<em>set</em>] </td>
+<td> [^<em>set</em>] </td>
+<td> Matches the complement of <em>set</em></td>
+</tr>
+<tr>
+<td>* </td>
+<td> * </td>
+<td> Matches the previous item (Regex) or class (Lua) 0+ times</td>
+</tr>
+<tr>
+<td>+ </td>
+<td> + </td>
+<td> Matches the previous item or class 1+ times</td>
+</tr>
+<tr>
+<td>*? </td>
+<td> - </td>
+<td> Matches the previous item or class 0+ times, non-greedily</td>
+</tr>
+<tr>
+<td>+? </td>
+<td> </td>
+<td> Matches the previous item 1+ times, non-greedily</td>
+</tr>
+<tr>
+<td>? </td>
+<td> ? </td>
+<td> Matches the previous item or class once or not at all</td>
+</tr>
+<tr>
+<td>{<em>m</em>,<em>n</em>} </td>
+<td> </td>
+<td> Matches the previous item between <em>m</em> and <em>n</em> times</td>
+</tr>
+<tr>
+<td>{<em>m</em>,} </td>
+<td> </td>
+<td> Matches the previous item at least <em>m</em> times</td>
+</tr>
+<tr>
+<td>{<em>m</em>} </td>
+<td> </td>
+<td> Matches the previous item exactly <em>m</em> times</td>
+</tr>
+<tr>
+<td>| </td>
+<td> </td>
+<td> Matches either the previous item or the next item</td>
+</tr>
+<tr>
+<td>&nbsp;  </td>
+<td> %b<em>xy</em> </td>
+<td> Matches a balanced string bounded by <em>x</em> and <em>y</em></td>
+</tr>
+<tr>
+<td>&nbsp; </td>
+<td> %f[<em>set</em>] </td>
+<td> Matches a position between characters not in and in <em>set</em></td>
+</tr>
+<tr>
+<td>\&lt; </td>
+<td> </td>
+<td> Matches the beginning of a word</td>
+</tr>
+<tr>
+<td>\> </td>
+<td> </td>
+<td> Matches the end of a word</td>
+</tr>
+<tr>
+<td>\b </td>
+<td> </td>
+<td> Matches a word boundary</td>
+</tr>
+<tr>
+<td>^ </td>
+<td> ^ </td>
+<td> Matches the beginning of a line unless inside a set</td>
+</tr>
+<tr>
+<td>$ </td>
+<td> $ </td>
+<td> Matches the end of a line unless inside a set</td>
+</tr>
+<tr>
+<td>( </td>
+<td> ( </td>
+<td> The beginning of a captured matching region</td>
+</tr>
+<tr>
+<td>) </td>
+<td> ) </td>
+<td> The end of a captured matching region</td>
+</tr>
+<tr>
+<td>(?:<em>&hellip;</em>) </td>
+<td> </td>
+<td> Consider matched &ldquo;<em>&hellip;</em>&rdquo; as a single, uncaptured item</td>
+</tr>
+<tr>
+<td>\<em>n</em> </td>
+<td> %<em>n</em> </td>
+<td> The <em>n</em>th captured matching region&rsquo;s text<sup>a</sup></td>
+</tr>
+<tr>
+<td>\<em>x</em> </td>
+<td> %<em>x</em> </td>
+<td> Non-alphanumeric character <em>x</em>, ignoring special meaning</td>
+</tr>
+</tbody>
+</table>
+
+
+<p><sup>a</sup>In replacement text, &ldquo;\0&rdquo; (Regex) or &ldquo;%0&rdquo; (Lua) represents all matched text.</p>
+
+<p>Textadept&rsquo;s regular expressions are based on the C++11 standard for ECMAScript.  There are a
+number of references for this syntax on the internet, including:</p>
+
+<ul>
+<li><a href="https://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript syntax C++ reference</a></li>
+<li><a href="https://en.cppreference.com/w/cpp/regex/ecmascript">Modified ECMAScript regular expression grammar</a></li>
+<li><a href="https://docs.microsoft.com/en-us/cpp/standard-library/regular-expressions-cpp">Regular Expressions (C++)</a></li>
+</ul>
+
+
+<p>More information on Lua patterns can be found in the <a href="https://www.lua.org/manual/5.3/manual.html#6.4.1">Lua 5.3 Reference
+Manual</a>.</p>
+
+<a name="Terminal-Version-Compatibility"></a>
+<h4>Terminal Version Compatibility</h4>
+
+<p>Textadept&rsquo;s terminal version requires a font with good glyph support (like DejaVu Sans Mono or
+Liberation Mono), and lacks some GUI features due to the terminal&rsquo;s constraints:</p>
+
+<ul>
+<li>No alpha values or transparency.</li>
+<li>No images in autocompletion lists. Instead, autocompletion lists show the first character in
+the string passed to <a href="api.html#buffer.register_image"><code>buffer.register_image()</code></a>.</li>
+<li>No buffered or two-phase drawing.</li>
+<li>Carets cannot have a period, line style, or width.</li>
+<li>No drag and drop.</li>
+<li>Edge lines may be obscured by text.</li>
+<li>No extra line ascent or descent.</li>
+<li>No fold lines above and below lines.</li>
+<li>No hotspot underlines on mouse hover.</li>
+<li>No indicators other than <code>INDIC_ROUNDBOX</code> and <code>INDIC_STRAIGHTBOX</code>, although neither has
+translucent drawing and <code>INDIC_ROUNDBOX</code> does not have rounded corners.</li>
+<li>Some complex marker symbols are not drawn properly or at all.</li>
+<li>No mouse cursor types.</li>
+<li>Only up to 16 colors recognized, regardless of how many colors the terminal
+supports. Unrecognized colors default to white.</li>
+<li>Not all key sequences are recognized properly.</li>
+<li>No style settings like font name, font size, or italics.</li>
+<li>No X selection, primary or secondary, integration with the clipboard.</li>
+<li>No zoom.</li>
+<li>When using the mouse in the Windows console, Shift+Double-click extends selections and
+quadruple-clicking inside a selection collapses it.</li>
+</ul>
+
+
+<a name="Directory-Structure"></a>
+<h4>Directory Structure</h4>
+
+<p>Textadept&rsquo;s directory structure is organized as follows:</p>
+
+<ul>
+<li><em>core/</em>: Contains Textadept&rsquo;s core Lua modules. These modules are essential for the application
+to run. They provide Textadept&rsquo;s Lua to C interface, event framework, file interactions,
+and localization.</li>
+<li><em>lexers/</em>: Houses the lexer modules that analyze source code for syntax highlighting.</li>
+<li><em>modules/</em>: Contains modules for editing text and source code, as well as language modules.</li>
+<li><em>themes/</em>: Contains built-in themes that customize the look and feel of Textadept.</li>
+<li><em>etc/</em>, <em>lib/</em>, and <em>share/</em>: GTK support directories and only appear in the Windows and
+macOS packages.</li>
+</ul>
+
+
+<a name="Technologies"></a>
+<h4>Technologies</h4>
+
+<p>Textadept is composed of the following technologies:</p>
+
+<ul>
+<li><a href="https://www.gtk.org/download/linux.php">GTK</a>: cross-platform GUI toolkit</li>
+<li><a href="https://invisible-island.net/ncurses/#download_ncurses">ncurses</a>: terminal UI library for Linux, macOS, and BSD</li>
+<li><a href="http://pdcurses.sourceforge.net">pdcurses</a>: terminal UI library for Windows</li>
+<li><a href="https://orbitalquark.github.io/gtdialog">gtDialog</a>: interactive GUI and terminal UI dialog library</li>
+<li><a href="https://invisible-island.net/cdk">cdk</a>: terminal UI widget toolkit</li>
+<li><a href="http://www.leonerd.org.uk/code/libtermkey">libtermkey</a>: terminal keyboard entry handling library</li>
+<li><a href="https://scintilla.org">Scintilla</a>: core text editing component</li>
+<li><a href="https://scintilla.org/Lexilla.html">Lexilla</a>: core syntax highlighting library for Scintilla</li>
+<li><a href="https://orbitalquark.github.io/scinterm">Scinterm</a>: curses (terminal) platform for Scintilla</li>
+<li><a href="https://orbitalquark.github.io/scintillua">Scintillua</a>: syntax highlighting for Scintilla using Lua lexers</li>
+<li><a href="https://www.lua.org">Lua</a>: core scripting language</li>
+<li><a href="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html">LPeg</a>: Lua pattern matching library for syntax highlighting</li>
+<li><a href="https://keplerproject.github.io/luafilesystem">LuaFileSystem</a>: Lua library for accessing the host filesystem</li>
+</ul>
+
+
+<a name="Migrating-from-Textadept-10-to-11"></a>
+<h4>Migrating from Textadept 10 to 11</h4>
+
+<a name="API-Changes"></a>
+<h5>API Changes</h5>
+
+<table>
+<thead>
+<tr>
+<th>Old API </th>
+<th style="text-align:center;"> Change </th>
+<th> New API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>buffer</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>set_theme() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#view.set_theme">view:set_theme()</a></td>
+</tr>
+<tr>
+<td>style_name[n] </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#buffer.name_of_style">name_of_style</a>(n)</td>
+</tr>
+<tr>
+<td>CASEINSENSITIVEBEHAVIOUR_* </td>
+<td style="text-align:center;"> Renamed </td>
+<td> CASEINSENSITIVEBEHAVIOR_*</td>
+</tr>
+<tr>
+<td>INDIC_GRADIENTCENTRE </td>
+<td style="text-align:center;"> Renamed </td>
+<td> INDIC_GRADIENTCENTER</td>
+</tr>
+<tr>
+<td>MARGIN_COLOUR </td>
+<td style="text-align:center;"> Renamed </td>
+<td> MARGIN_COLOR</td>
+</tr>
+<tr>
+<td>auto_c_case_insensitive_behaviour </td>
+<td style="text-align:center;"> Renamed </td>
+<td> auto_c_case_insensitive_behavior</td>
+</tr>
+<tr>
+<td>colourise </td>
+<td style="text-align:center;"> Renamed </td>
+<td> colorize</td>
+</tr>
+<tr>
+<td>edge_colour </td>
+<td style="text-align:center;"> Renamed </td>
+<td> edge_color</td>
+</tr>
+<tr>
+<td>set_fold_margin_*colour </td>
+<td style="text-align:center;"> Renamed </td>
+<td> set_fold_margin_*color</td>
+</tr>
+<tr>
+<td>vertical_centre_caret </td>
+<td style="text-align:center;"> Renamed </td>
+<td> vertical_center_caret</td>
+</tr>
+<tr>
+<td><strong>events</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>AUTO_C_CANCELLED </td>
+<td style="text-align:center;"> Renamed </td>
+<td> AUTO_C_CANCELED</td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.COMMAND_TEXT_CHANGED">COMMAND_TEXT_CHANGED</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> FILE_BEFORE_RELOAD</td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> FILE_AFTER_RELOAD</td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.FIND_RESULT_FOUND">FIND_RESULT_FOUND</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.FIND_TEXT_CHANGED">FIND_TEXT_CHANGED</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.SESSION_SAVE">SESSION_SAVE</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.SESSION_LOAD">SESSION_LOAD</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#events.UNFOCUS">UNFOCUS</a></td>
+</tr>
+<tr>
+<td><strong>io</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>reload_file() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#buffer.reload">buffer:reload()</a></td>
+</tr>
+<tr>
+<td>save_file() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#buffer.save">buffer:save()</a></td>
+</tr>
+<tr>
+<td>save_file_as() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#buffer.save_as">buffer:save_as()</a></td>
+</tr>
+<tr>
+<td>close_buffer() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#buffer.close">buffer:close()</a></td>
+</tr>
+<tr>
+<td><strong>keys</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MODE </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#keys.mode">mode</a></td>
+</tr>
+<tr>
+<td><strong>lexer</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#lexer.to_eol">to_eol()</a></td>
+</tr>
+<tr>
+<td>delimited_range() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#lexer.range">range()</a></td>
+</tr>
+<tr>
+<td>nested_pair() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#lexer.range">range()</a></td>
+</tr>
+<tr>
+<td>fold_line_comments() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#lexer.fold_consecutive_lines">fold_consecutive_lines()</a><sup>a</sup></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#lexer.number">number</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#lexer.colors">colors</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#lexer.styles">styles</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#lexer.folding">folding</a> and other fold* properties</td>
+</tr>
+<tr>
+<td><strong>lfs</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>dir_foreach() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> for filename in <a href="api.html#lfs.walk">lfs.walk()</a> do &hellip; end</td>
+</tr>
+<tr>
+<td><strong>textadept.bookmarks</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>toggle(line, on) </td>
+<td style="text-align:center;"> Changed </td>
+<td> <a href="api.html#textadept.bookmarks.toggle">toggle()</a></td>
+</tr>
+<tr>
+<td><strong>textadept.editing</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>block_comment() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.editing.toggle_comment">toggle_comment()</a></td>
+</tr>
+<tr>
+<td>highlight_word() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#textadept.editing.highlight_words">highlight_words</a></td>
+</tr>
+<tr>
+<td><strong>textadept.file_types</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>lexers </td>
+<td style="text-align:center;"> Removed </td>
+<td> N/A<sup>b</sup></td>
+</tr>
+<tr>
+<td><strong>textadept.find</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>find_incremental() </td>
+<td style="text-align:center;"> Replaced </td>
+<td> <a href="api.html#ui.find.incremental">incremental</a><sup>c</sup></td>
+</tr>
+<tr>
+<td>find_incremental_keys </td>
+<td style="text-align:center;"> Removed </td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#ui.find.highlight_all_matches">highlight_all_matches</a></td>
+</tr>
+<tr>
+<td><strong>textadept.history</strong> </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#textadept.history">textadept.history</a></td>
+</tr>
+<tr>
+<td><strong>textadept.run</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#textadept.run.set_arguments">set_arguments</a></td>
+</tr>
+<tr>
+<td><strong>textadept.snippets</strong> </td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>_insert() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.snippets.insert">insert()</a></td>
+</tr>
+<tr>
+<td>_previous() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.snippets.previous">previous()</a></td>
+</tr>
+<tr>
+<td>_cancel_current() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.snippets.cancel_current">cancel_current()</a></td>
+</tr>
+<tr>
+<td>_select() </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.snippets.select">select()</a></td>
+</tr>
+<tr>
+<td>_paths </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#textadept.snippets.paths">paths</a></td>
+</tr>
+<tr>
+<td><strong>ui</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bufstatusbar_text </td>
+<td style="text-align:center;"> Renamed </td>
+<td> <a href="api.html#ui.buffer_statusbar_text">buffer_statusbar_text</a></td>
+</tr>
+<tr>
+<td><strong>ui.command_entry</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#ui.command_entry.active">active</a></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#ui.command_entry.append_history">append_history</a></td>
+</tr>
+<tr>
+<td><strong>ui.dialogs</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#ui.dialogs.progressbar">progressbar()</a></td>
+</tr>
+<tr>
+<td><strong>ui.find</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>find_in_files_timeout </td>
+<td style="text-align:center;"> Removed </td>
+<td> N/A</td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <a href="api.html#ui.command_entry.active">active</a></td>
+</tr>
+<tr>
+<td><strong>view</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N/A </td>
+<td style="text-align:center;"> Added </td>
+<td> <em>buffer functions and fields</em><sup>d</sup></td>
+</tr>
+</tbody>
+</table>
+
+
+<p><sup>a</sup>Returns prefix and function, instead of just function.<br/>
+<sup>b</sup>Use <code>for name in buffer:private_lexer_call(_SCINTILLA.properties.lexer_language[1]):gmatch('[^\n]+') do ... end</code>.<br/>
+<sup>c</sup>Use <code>textadept.menu.menubar[_L['Search']][_L['Find Incremental']][2]</code>.<br/>
+<sup>d</sup>Most buffer functions and fields are available in views now. See section below.</p>
+
+<a name="Buffer-Indexing-Changes"></a>
+<h5>Buffer Indexing Changes</h5>
+
+<p>All buffer positions, lines, and countable entities now start from <code>1</code> instead of <code>0</code>. For example,
+<code>buffer:get_line(1)</code> now returns the contents of the first line instead of <code>buffer:get_line(0)</code>,
+and marker and indicator numbers now count from 1 instead of 0.</p>
+
+<p>While this change may seem daunting for migrating user scripts, in practice it is not, since most
+usage is internal, and an offset of 1 or 0 does not matter.  In migrating Textadept&rsquo;s internals,
+the following changes were made:</p>
+
+<ul>
+<li>Themes that loop through marker numbers will need to be updated from something like
+<code>for i = 25, 31 do ... end</code> to either <code>for i = 26, 32 do ... end</code> or
+<code>for i = buffer.MARKNUM_FOLDEREND, buffer.MARKNUM_FOLDEROPEN do ... end</code>.</li>
+<li>Most references of <code>buffer.length</code> will need to be changed to <code>buffer.length + 1</code>. For example,
+something like <code>buffer:goto_pos(buffer.length)</code> needs to be <code>buffer:goto_pos(buffer.length + 1)</code>.
+The exceptions are when <code>buffer.length</code> is not used as a position, as in
+<code>buffer:indicator_clear_range(1, buffer.length)</code>, which is still valid.</li>
+<li>Any <code>buffer</code> function calls and property indexing with bare numbers should be changed to
+calls or indexes with those numbers plus 1. For example, <code>buffer:contracted_fold_next(0)</code>
+changes to <code>buffer:contracted_fold_next(1)</code>, and <code>buffer.margin_n_width[1] = ...</code> changes to
+<code>buffer.margin_n_width[2] = ...</code>.</li>
+<li>Any looping through lines, margins, and selections via
+<code>for i = 0, buffer.{line_count,margins,selections} - 1 do ... end</code> needs to be
+<code>for i = 1, buffer.{line_count,margins,selections} do ... end</code>.</li>
+<li>Similarly, any language modules that loop back through lines (e.g. to determine types for
+autocompletion) via <code>for i = current_line, 0, -1 do ... end</code> needs to be
+<code>for i = current_line, 1, -1 do ... end</code>.</li>
+<li>Marker or indicator masks are produced by subtracting 1 from marker or indicator
+numbers. For example, <code>1 &lt;&lt; textadept.bookmarks.MARK_BOOKMARK</code> changes to
+<code>1 &lt;&lt; textadept.bookmarks.MARK_BOOKMARK - 1</code>.</li>
+<li>Logic that depends on the return value of <code>buffer:get_cur_line()</code> may need to be changed. For
+example, any subsequent references to <code>pos</code> after <code>local line, pos = buffer:get_cur_line()</code>
+like <code>if line:sub(1, pos) ... end</code> need to be changed to <code>if line:sub(1, pos - 1) ... end</code>.</li>
+</ul>
+
+
+<p>I found it helpful to quickly scan source files for syntax-highlighted numbers and then seeing
+if those numbers needed to be changed. Searching for &ldquo;- 1&rdquo;, &ldquo;+ 1&rdquo;, &ldquo;buffer.length&rdquo;, etc. was
+also helpful.</p>
+
+<a name="View-API-Additions-and-Buffer-API-Changes"></a>
+<h5>View API Additions and Buffer API Changes</h5>
+
+<p>Textadept&rsquo;s <a href="api.html#buffer">buffer</a> API is largely based on the <a href="https://scintilla.org/ScintillaDoc.html">Scintilla API</a>, which does not distinguish
+between buffer- and view-specific functionality. Textadept 11 now attempts to separate this
+functionality, but only superficially. Buffers and views may be used interchangeably for the
+most part, but the <a href="api.html#buffer">buffer</a> and <a href="api.html#view">view</a> API provides <em>guidance</em> (not hard requirements)
+on which functions and fields are more appropriate for their respective objects. <em>User scripts
+do not need to be updated and will continue to function normally</em>. The following &ldquo;Find&rdquo; regex
+can be used to help convert <code>buffer.*</code> functionality to <code>view.*</code>:</p>
+
+<pre style="word-wrap: break-word;">
+<code>(\w+)([.:])\b(additional_caret_fore|additional_carets_blink|additional_carets_visible|additional_sel_alpha|additional_sel_back|additional_sel_fore|all_lines_visible|annotation_visible|auto_c_max_height|auto_c_max_width|call_tip_fore_hlt|call_tip_pos_start|call_tip_position|call_tip_use_style|caret_fore|caret_line_back|caret_line_back_alpha|caret_line_frame|caret_line_visible|caret_line_visible_always|caret_period|caret_style|caret_width|cursor|edge_colour|edge_column|edge_mode|end_at_last_line|extra_ascent|extra_descent|first_visible_line|fold_display_text_style|fold_expanded|fold_flags|h_scroll_bar|highlight_guide|idle_styling|indentation_guides|indic_alpha|indic_fore|indic_hover_fore|indic_hover_style|indic_outline_alpha|indic_style|indic_under|line_visible|lines_on_screen|margins|margin_back_n|margin_cursor_n|margin_left|margin_mask_n|margin_options|margin_right|margin_sensitive_n|margin_type_n|margin_width_n|marker_alpha|marker_back|marker_back_selected|marker_fore|mouse_dwell_time|mouse_selection_rectangular_switch|property|property_expanded|property_int|rectangular_selection_modifier|representation|rgba_image_height|rgba_image_scale|rgba_image_width|scroll_width|scroll_width_tracking|sel_alpha|sel_eol_filled|size|style_back|style_bold|style_case|style_changeable|style_eol_filled|style_font|style_fore|style_italic|style_size|style_underline|style_visible|tab_draw_mode|v_scroll_bar|view_eol|view_ws|whitespace_size|wrap_indent_mode|wrap_mode|wrap_start_indent|wrap_visual_flags|wrap_visual_flags_location|x_offset|zoom|ANNOTATION_BOXED|ANNOTATION_HIDDEN|ANNOTATION_STANDARD|ANNOTATION_INDENTED|CARETSTYLE_BLOCK|CARETSTYLE_INVISIBLE|CARETSTYLE_LINE|CARET_EVEN|CARET_JUMPS|CARET_SLOP|CARET_STRICT|EDGE_BACKGROUND|EDGE_LINE|EDGE_MULTILINE|EDGE_NONE|FOLDACTION_CONTRACT|FOLDACTION_EXPAND|FOLDACTION_TOGGLE|FOLDDISPLAYTEXT_HIDDEN|FOLDDISPLAYTEXT_STANDARD|FOLDDISPLAYTEXT_BOXED|INDIC_BOX|INDIC_COMPOSITIONTHICK|INDIC_COMPOSITIONTHIN|INDIC_DASH|INDIC_DIAGONAL|INDIC_DOTBOX|INDIC_DOTS|INDIC_FULLBOX|INDIC_GRADIENT|INDIC_GRADIENTCENTRE|INDIC_HIDDEN|INDIC_PLAIN|INDIC_POINT|INDIC_POINTCHARACTER|INDIC_ROUNDBOX|INDIC_SQUIGGLE|INDIC_SQUIGGLELOW|INDIC_SQUIGGLEPIXMAP|INDIC_STRAIGHTBOX|INDIC_STRIKE|INDIC_TEXTFORE|INDIC_TT|MOD_ALT|MOD_CTRL|MOD_META|MOD_SHIFT|MOD_SUPER|MOUSE_DRAG|MOUSE_PRESS|MOUSE_RELEASE|WS_INVISIBLE|WS_VISIBLEAFTERINDENT|WS_VISIBLEALWAYS|WS_VISIBLEONLYININDENT|ALPHA_NOALPHA|ALPHA_OPAQUE|ALPHA_TRANSPARENT|CASE_CAMEL|CASE_LOWER|CASE_MIXED|CASE_UPPER|CURSORARROW|CURSORNORMAL|CURSORREVERSEARROW|CURSORWAIT|FOLDFLAG_LEVELNUMBERS|FOLDFLAG_LINEAFTER_CONTRACTED|FOLDFLAG_LINEAFTER_EXPANDED|FOLDFLAG_LINEBEFORE_CONTRACTED|FOLDFLAG_LINEBEFORE_EXPANDED|FOLDFLAG_LINESTATE|IV_LOOKBOTH|IV_LOOKFORWARD|IV_NONE|IV_REAL|MARGINOPTION_NONE|MARGINOPTION_SUBLINESELECT|MARGIN_BACK|MARGIN_COLOUR|MARGIN_FORE|MARGIN_NUMBER|MARGIN_RTEXT|MARGIN_SYMBOL|MARGIN_TEXT|MARK_ARROW|MARK_ARROWDOWN|MARK_ARROWS|MARK_BACKGROUND|MARK_BOOKMARK|MARK_BOXMINUS|MARK_BOXMINUSCONNECTED|MARK_BOXPLUS|MARK_BOXPLUSCONNECTED|MARK_CHARACTER|MARK_CIRCLE|MARK_CIRCLEMINUS|MARK_CIRCLEMINUSCONNECTED|MARK_CIRCLEPLUS|MARK_CIRCLEPLUSCONNECTED|MARK_DOTDOTDOT|MARK_EMPTY|MARK_FULLRECT|MARK_LCORNER|MARK_LCORNERCURVE|MARK_LEFTRECT|MARK_MINUS|MARK_PIXMAP|MARK_PLUS|MARK_RGBAIMAGE|MARK_ROUNDRECT|MARK_SHORTARROW|MARK_SMALLRECT|MARK_TCORNER|MARK_TCORNERCURVE|MARK_UNDERLINE|MARK_VERTICALBOOKMARK|MARK_VLINE|MASK_FOLDERS|TD_LONGARROW|TD_STRIKEOUT|TIME_FOREVER|WRAPINDENT_DEEPINDENT|WRAPINDENT_FIXED|WRAPINDENT_INDENT|WRAPINDENT_SAME|WRAPVISUALFLAGLOC_DEFAULT|WRAPVISUALFLAGLOC_END_BY_TEXT|WRAPVISUALFLAGLOC_START_BY_TEXT|WRAPVISUALFLAG_END|WRAPVISUALFLAG_MARGIN|WRAPVISUALFLAG_NONE|WRAPVISUALFLAG_START|WRAP_CHAR|WRAP_NONE|WRAP_WHITESPACE|WRAP_WORD|STYLE_BRACEBAD|STYLE_BRACELIGHT|STYLE_CALLTIP|STYLE_CONTROLCHAR|STYLE_DEFAULT|STYLE_FOLDDISPLAYTEXT|STYLE_INDENTGUIDE|STYLE_LINENUMBER|STYLE_MAX|UPDATE_H_SCROLL|UPDATE_V_SCROLL|VISIBLE_SLOP|VISIBLE_STRICT|brace_bad_light|brace_bad_light_indicator|brace_highlight|brace_highlight_indicator|call_tip_active|call_tip_cancel|call_tip_pos_start|call_tip_set_hlt|call_tip_show|clear_registered_images|clear_representation|contracted_fold_next|doc_line_from_visible|ensure_visible|ensure_visible_enforce_policy|fold_all|fold_children|fold_line|get_default_fold_display_text|hide_lines|line_scroll|line_scroll_down|line_scroll_up|marker_define|marker_define_pixmap|marker_define_rgba_image|marker_enable_highlight|marker_symbol_defined|multi_edge_add_line|multi_edge_clear_all|register_image|register_rgba_image|scroll_caret|scroll_to_end|scroll_to_start|scroll_range|set_default_fold_display_text|set_fold_margin_colour|set_fold_margin_hi_colour|set_sel_back|set_sel_fore|set_visible_policy|set_whitespace_back|set_whitespace_fore|set_x_caret_policy|set_y_caret_policy|show_lines|style_clear_all|style_reset_default|text_height|text_width|toggle_fold|toggle_fold_show_text|vertical_centre_caret|visible_from_doc_line|wrap_count|zoom_in|zoom_out|split|unsplit|goto_buffer)\b</code>
+</pre>
+
+
+<p>&ldquo;Replace&rdquo; with</p>
+
+<pre><code>view\2\3
+</code></pre>
+
+<p>It is not recommended to blindly &ldquo;Replace All&rdquo;. Each change should be manually confirmed.</p>
+
+<a name="Theme-and-Lexer-Changes"></a>
+<h5>Theme and Lexer Changes</h5>
+
+<p>Themes and lexers have a new, optional API for defining and using colors and styles. Previously,
+all definitions and access to colors and styles was accomplished through <code>buffer.property</code>
+and <code>buffer.property_int</code>. Now it can be done via the <code>lexer.colors</code> and <code>lexer.styles</code>
+variables. For example:</p>
+
+<pre><code>-- Textadept 10
+local property, property_int = buffer.property, buffer.property_int
+property['color.blue'] = 0xFF0000
+property['style.keyword'] = 'fore:$(color.blue),bold'
+buffer.edge_colour = property_int['color.grey']
+
+-- Textadept 11
+local colors, styles = lexer.colors, lexer.styles
+colors.blue = 0xFF0000
+styles.keyword = {fore = colors.blue, bold = true}
+view.edge_color = colors.grey
+</code></pre>
+
+<p>Any additional settings passed <code>view:set_theme()</code> are available as global variables in the
+theme. Textadept&rsquo;s themes make use of <code>font</code> and <code>size</code> (the latter of which used to be
+<code>fontsize</code>) for easily configuring font and size per-user.</p>
+
+<p>Lexers can also utilize these new features. For example:</p>
+
+<pre><code>-- Textadept 10
+lex:add_rule('custom_rule', token('custom', P('word')))
+lex:add_style('custom', lexer.STYLE_KEYWORD .. 'italic')
+
+-- Textadept 11
+lex:add_rule('custom_rule', token('custom', P('word')))
+lex:add_style('custom', lexer.styles.keyword .. {italic = true})
+</code></pre>
+
+<p>Note that these features are optional. Themes and lexers setting property strings is still
+supported.</p>
+
+<a name="Localization-Changes"></a>
+<h5>Localization Changes</h5>
+
+<p>GUI mnemonics in localization keys have been removed. For example, <code>_L['_New']</code> should be
+changed to <code>_L['New']</code>. Mnemonics can still be used in localization values; it&rsquo;s just the keys
+that have changed. See Textadept&rsquo;s <em>core/locale.conf</em> for examples.</p>
+
+<a name="Key-Bindings-Changes"></a>
+<h5>Key Bindings Changes</h5>
+
+<p>Key sequence modifiers have changed from their shortened form to a longer form that is more
+intuitive. <code>'c'</code> is now <code>'ctrl'</code>, <code>'a'</code> is now <code>'alt'</code>, <code>'m'</code> is now <code>'cmd'</code> on macOS and
+<code>'meta'</code> in the terminal version, and <code>'s'</code> is now <code>'shift'</code>. For example, <code>keys.cn = ...</code> is now
+<code>keys['ctrl+n'] = ...</code> and <code>keys['m&lt;'] = ...</code> is now <code>keys['cmd+&lt;'] = ...</code> or <code>keys['meta+&lt;']
+= ...</code>.</p>
+
+<p>The key binding for inserting a user-specified snippet from a dialog has changed from <code>Ctrl+K</code>
+(<code>⌥⇥</code> on macOS | <code>M-K</code> on the terminal) to <code>Ctrl+Shift+K</code> (<code>⌥⇧⇥</code> | <code>M-S-K</code>). <code>Ctrl+K</code>
+(<code>⌥⇥</code> | <code>M-K</code>) now autocompletes snippet names.</p>
+
+<a name="Session-Changes"></a>
+<h5>Session Changes</h5>
+
+<p>Textadept saves and loads session from Lua data files instead of structured text files. As a
+result, Textadept 11 cannot load session files from 10.x or before.</p>
+
+<a name="Miscellaneous-Changes"></a>
+<h5>Miscellaneous Changes</h5>
+
+<ul>
+<li><em>~/.textadept/?.lua</em> and <em>~/.textadept/?.{so,dll}</em> has been removed from <code>package.path</code> and
+<code>package.cpath</code>, respectively. All modules should be placed in <em>~/.textadept/modules/</em>.</li>
+<li>The command entry no longer recognizes a Lua 5.1-style &lsquo;<code>=</code>&rsquo; prefix for printing return
+values. Printing return values has been the default for quite some time.</li>
+</ul>
+
+
+      </div>
+      <div id="footer">
+        <p style="text-align:center;"> &copy; 2007-2022 <a href="https://github.com/orbitalquark">Mitchell</a></p>
+      </div>
+    </div>
+  </body>
+</html>

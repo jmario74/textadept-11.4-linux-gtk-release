@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>FAQ</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <link rel="icon" href="icon.png" type="image/png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="content">
+      <div id="header">
+        <h1><img src="images/icon.png" alt="" /> Textadept</h1>
+        <ul>
+          <li><a href="index.html">Home</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/releases">Download</a> |</li>
+          <li><a href="book.html">Book</a> |</li>
+          <li><a href="manual.html">Manual</a> |</li>
+          <li><a href="api.html">API</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept">Source</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept-modules">Extra Modules</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/wiki">Wiki</a> |</li>
+          <li><a href="https://github.com/orbitalquark/textadept/discussions">Support</a></li>
+        </ul>
+      </div>
+      <div id="main">
+        <a name="FAQ"></a>
+<h2>FAQ</h2>
+
+<p><strong>Q:</strong>
+If Textadept is so minimalist, why are the downloads around 20MB in size and the unzipped
+folders more than double that? Why is the Git repository more than 50MB in size?</p>
+
+<p><strong>A:</strong>
+Each download contains 2 executables: a GUI version and a terminal version.  Furthermore, the
+Windows and macOS packages bundle in GTK runtimes, accounting for ~80% of the total application
+size. (GTK is the cross-platform GUI toolkit Textadept uses.) Finally, nightly builds are
+compiled with debug symbols enabled in order to aid debugging of various issues.</p>
+
+<p>The Git repository is an export of an underlying Mercurial repository and is not compressed or
+optimized for size. After the initial clone, you can run <code>git gc --aggressive</code> to reduce its
+footprint to about a third of the original size.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+On Linux I either get one of the following error messages when trying to run Textadept, or I
+get odd behavior in the terminal version, even crashes.</p>
+
+<ul>
+<li><code>error while loading shared libraries: &lt;lib&gt;: cannot open shared object file: No such file
+or directory</code></li>
+<li><code>/&lt;path&gt;/libc.so.6: version 'GLIBC_&lt;version&gt;' not found</code></li>
+</ul>
+
+
+<p>How do I fix this?</p>
+
+<p><strong>A:</strong>
+Short answer: you will need to <a href="manual.html#compiling">compile</a> Textadept manually for your system, which is a very
+straightforward and easy process.</p>
+
+<p>Long answer: it is difficult to provide a binary that runs on all Linux platforms since the
+library versions installed vary widely from distribution to distribution. For example, &ldquo;libpng14&rdquo;
+was available for many distributions starting in late 2009 while Ubuntu 12.04 (circa 2012)
+used &ldquo;libpng12&rdquo;. More recently, some distributions have started using &ldquo;libncurses6&rdquo; while many
+distributions are still on &ldquo;libncurses5&rdquo;. The only way to avoid problems that stem from these
+cases is to compile Textadept for the target system.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+On Windows my anti-virus software says Textadept contains a virus. Does it? Or is this a
+false-positive?</p>
+
+<p><strong>A:</strong>
+Textadept does not contain any viruses and it certainly is a false positive.  The likely culprit
+is the <code>textadept-curses.exe</code> executable, which runs in the Windows command prompt.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+Why can&rsquo;t Textadept handle HUGE files very well?</p>
+
+<p><strong>A:</strong>
+Textadept is an editor for programmers. It is unlikely a programmer would be editing a gigantic
+log file. There are other tools for that case.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+When I open a file in a non-English language, I see a lot of strange characters.</p>
+
+<p><strong>A:</strong>
+Textadept was not able to detect the file&rsquo;s encoding correctly. You&rsquo;ll need to <a href="manual.html#encoding">help it</a>.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+When I click the &ldquo;Compile&rdquo; or &ldquo;Run&rdquo; menu item (or execute the key command), either nothing
+happens or the wrong command is executed. How can I tell Textadept which command to run?</p>
+
+<p><strong>A:</strong>
+The LuaDoc describes <a href="api.html#_M.Compile.and.Run">compile and run commands</a> and you can configure them in your
+<a href="manual.html#textadept">preferences</a>.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+In the terminal version on Linux, pressing <code>^Z</code> suspends Textadept instead of performing an
+&ldquo;Undo&rdquo; action. How can I disable suspend and perform &ldquo;Undo&rdquo; instead?</p>
+
+<p><strong>A:</strong>
+Place the following in your <code>~/.textadept/init.lua</code> file:</p>
+
+<pre><code>events.connect(events.SUSPEND, function()
+  buffer:undo()
+  return true
+end, 1)
+</code></pre>
+
+<hr />
+
+<p><strong>Q:</strong>
+In Linux, middle-clicking in the terminal version does not paste the primary selection and
+selecting text does copy to the primary selection. All other terminal apps support this
+functionality, why not Textadept?</p>
+
+<p><strong>A:</strong>
+It does; use the <code>Shift</code> modifier key with your middle-clicking and text selecting. Textadept
+interprets non-<code>Shift</code>ed mouse events like a GUI application.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+The terminal version does not support feature <em>x</em> the GUI version does. Is this a bug?</p>
+
+<p><strong>A:</strong>
+Maybe. Some terminals do not recognize certain key sequences like <code>Shift+Arrow</code> for making
+selections. Linux&rsquo;s virtual terminals (the ones accessible with <code>Ctrl+Alt+FunctionKey</code>) are an
+example. GNOME Terminal, LXTerminal and XTerm seem to work fine. rxvt and rxvt-unicode do not
+work out of the box, but may be configurable.</p>
+
+<p>Please see the <a href="manual.html#terminal-version-compatibility">terminal version compatibility</a> section of the appendix. If the feature
+in question is not listed there, it may be a bug. Please contact me (see README.md) with any
+bug reports.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+Pressing <code>^O</code> in the terminal version on macOS does not do anything. Why?</p>
+
+<p><strong>A:</strong>
+For whatever reason, <code>^O</code> is discarded by the terminal driver. To enable it, run <code>stty discard
+undef</code> first. You can put the command in your <em>~/.bashrc</em> or <em>~/.bash_profile</em> to make it
+permanent.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+How can I get the terminal version on macOS to show more than 8 colors?</p>
+
+<p><strong>A:</strong>
+Enable the &ldquo;Use bright colors for bold text&rdquo; setting in your Terminal.app preferences.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+Why does Textadept remember its window size but not its window position?</p>
+
+<p><strong>A:</strong>
+Your window manager is to blame. Textadept is not responsible for, and should never attempt to
+set its window position.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+I am not able to use the &ldquo;Consolas&rdquo; or [insert other Windows font package here] on
+Windows. Textadept just uses a default font. How can I get it to use my font?</p>
+
+<p><strong>A:</strong>
+You&rsquo;ll have to provide the full name of the font, such as &ldquo;Consolas Regular&rdquo;, rather than just
+the name of the &ldquo;ttf&rdquo; file in your Fonts directory.</p>
+
+<hr />
+
+<p><strong>Q:</strong>
+On my Windows HiDPI display, Textadept&rsquo;s fonts look fuzzy or blurred. How can I make them crisp
+like other HiDPI-aware applications?</p>
+
+<p><strong>A:</strong>
+GTK, the cross-platform GUI toolkit Textadept uses, is not HiDPI aware, so you need to
+instruct Windows to take over font rendering. Right-click on the Textadept executable and
+select &ldquo;Properties&rdquo;. Click on the &ldquo;Compatibility&rdquo; tab and then the &ldquo;Change high DPI settings&rdquo;
+button. Check the &ldquo;Override high DPI scaling&rdquo; checkbox towards the bottom of the pop-up
+dialog. The next time you run Textadept, the fonts should look much better. You may have to
+tweak other settings in the dialog, but the above worked for me.</p>
+
+      </div>
+      <div id="footer">
+        <p style="text-align:center;"> &copy; 2007-2022 <a href="https://github.com/orbitalquark">Mitchell</a></p>
+      </div>
+    </div>
+  </body>
+</html>
