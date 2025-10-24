@@ -186,6 +186,10 @@ view.wrap_mode = view.WRAP_WORD
 
 -- no typeover character ")"
 textadept.editing.typeover_chars[string.byte(')')] = false
+textadept.editing.typeover_chars[string.byte(']')] = false
+textadept.editing.typeover_chars[string.byte('}')] = false
+textadept.editing.typeover_chars[string.byte("'")] = false
+textadept.editing.typeover_chars[string.byte('"')] = false
 
 -- remove trailing spaces on save
 textadept.editing.strip_trailing_spaces = true
@@ -602,11 +606,16 @@ local function blok_commnt()
 	local sel_text = buffer.get_sel_text()
 	-- only if or not block comment
 	if string.find(sel_text, "/[*]") == nil and string.find(sel_text, "[*]/") == nil then
-    for i=1, #bufStartArr do
-      if i ~= 1 then mov = mov + 4 end
+    if #bufStartArr > 0 then
+      for i=1, #bufStartArr do
+        if i ~= 1 then mov = mov + 4 end
 
-      buffer:insert_text(bufStartArr[i] + mov, '/*')
-      buffer:insert_text(bufEndArr[i] + 2 + mov, '*/')
+        buffer:insert_text(bufStartArr[i] + mov, '/*')
+        buffer:insert_text(bufEndArr[i] + 2 + mov, '*/')
+      end
+    elseif #bufStartArr == 0 then
+      buffer:insert_text(buffer.current_pos, '/*  */')
+      buffer:set_empty_selection(buffer.current_pos + 3)
     end
   -- remove block comment
 	elseif string.find(sel_text, "/[*]") ~= nil and string.find(sel_text, "[*]/") ~= nil then
