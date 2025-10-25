@@ -256,7 +256,6 @@ end)
 events.connect(events.UPDATE_UI, function(updated)
   if not (updated & buffer.UPDATE_CONTENT) then end
   if selText == '' then
-    buffer.undo_collection = true
     subStr = ''
     bufStart = 0
     bufEnd = 0
@@ -608,6 +607,7 @@ local function blok_commnt()
   if #bufStartArr > 0 then
     for i=1, #bufStartArr do
       if i ~= 1 then
+        -- markers take up space, adjust next position to compensate
         mov = mov + #comMrk
         buffer:goto_pos(bufStartArr[i] + mov)
       end
@@ -615,31 +615,36 @@ local function blok_commnt()
         buffer:goto_pos(bufStartArr[i])
       end
 
+      -- do not record in undo history, marker insert action
       buffer.undo_collection = false
 
+      --insert a marker at the start of each selection
       buffer:insert_text(buffer.current_pos, comMrk)
 
       if i == #bufStartArr then
+        -- after all markers have been placed
         for i=1, #bufStartArr do
+          -- look for the markers and use its position, the markers adjust position as inserts and removes are done on the document
           local pos = buffer:search_next(buffer.FIND_REGEXP, comMrk)
 
+          -- do not record in undo history, marker delete action
           buffer.undo_collection = false
 
+          -- marker no longer needed
           buffer:delete_range(pos, #comMrk)
 
           -- only if or not block comment
           if string.find(bufTextArr[bufEndArr[i]],"/[*]") == nil and string.find(bufTextArr[bufEndArr[i]], "[*]/") == nil then
+            -- record in undo history insert
             buffer.undo_collection = true
             buffer:insert_text(pos, '/*')
             buffer:insert_text(pos + #bufTextArr[bufEndArr[i]] + #'*/', '*/')
-            buffer.undo_collection = false
           elseif string.find(bufTextArr[bufEndArr[i]], "/[*]") ~= nil and string.find(bufTextArr[bufEndArr[i]], "[*]/") ~= nil then
             local newText = bufTextArr[bufEndArr[i]]:gsub("/[*]", "")
             newText = newText:gsub("[*]/", "")
             buffer:set_target_range(pos, pos + #bufTextArr[bufEndArr[i]])
             buffer.undo_collection = true
             buffer:replace_target(newText)
-            buffer.undo_collection = false
           end
         end
       end
