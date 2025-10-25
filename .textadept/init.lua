@@ -639,7 +639,7 @@ local function blok_commnt()
             buffer.undo_collection = true
             buffer:insert_text(pos, '/*')
             buffer:insert_text(pos + #bufTextArr[bufEndArr[i]] + #'*/', '*/')
-          elseif string.find(bufTextArr[bufEndArr[i]], "/[*]") ~= nil and string.find(bufTextArr[bufEndArr[i]], "[*]/") ~= nil then
+          elseif string.find(bufTextArr[bufEndArr[i]], "/[*]") ~= nil or string.find(bufTextArr[bufEndArr[i]], "[*]/") ~= nil then
             local newText = bufTextArr[bufEndArr[i]]:gsub("/[*]", "")
             newText = newText:gsub("[*]/", "")
             buffer:set_target_range(pos, pos + #bufTextArr[bufEndArr[i]])
