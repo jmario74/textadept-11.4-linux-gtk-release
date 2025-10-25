@@ -205,7 +205,7 @@ local bufEnd = 0
 local textArr = {}
 local arrOnce = 1
 -- used in "local function dup()"
-local dupTextArr = {}
+local bufTextArr = {}
 events.connect(events.UPDATE_UI, function(updated)
   if not (updated & buffer.UPDATE_SELECTION) then end
 
@@ -243,7 +243,7 @@ events.connect(events.UPDATE_UI, function(updated)
       table.insert(bufEndArr, bufEnd)
 
       -- used in "local function dup()"
-      dupTextArr[bufEnd] = subStr-- use selected text end pos as index to match it with the sorted text end positions
+      bufTextArr[bufEnd] = subStr-- use selected text end pos as index to match it with the sorted text end positions
 
       arrOnce = 0
     end
@@ -256,13 +256,14 @@ end)
 events.connect(events.UPDATE_UI, function(updated)
   if not (updated & buffer.UPDATE_CONTENT) then end
   if selText == '' then
+    buffer.undo_collection = true
     subStr = ''
     bufStart = 0
     bufEnd = 0
     textArr = {}
     bufStartArr = {}
     bufEndArr = {}
-    dupTextArr = {}
+    bufTextArr = {}
     collectgarbage()
   end
 end)
@@ -311,14 +312,14 @@ end
 events.connect(events.UPDATE_UI,word_wrap_caret)
 
 -- Duplicate multi-line/selection
-local mrk = 'ǻ' .. '⧞' .. 'Ø' .. 'ד'-- separated so when using multi-line duplicate on this file
+local mrk = 'ǻ' .. '⧞'-- separated so when using multi-line duplicate on this file
 local function dup()
   local onDup = 0
   local dupMov = 0
 
   if len > 0 then
     -- add the last selected values
-    dupTextArr[bufEnd] = subStr-- use selected text end pos as index to match it with the sorted text end positions
+    bufTextArr[bufEnd] = subStr-- use selected text end pos as index to match it with the sorted text end positions
     table.insert(bufEndArr, bufEnd)
 
     onDup = 1
@@ -369,7 +370,7 @@ local function dup()
 
           buffer.undo_collection = true-- record undo history again
 
-          buffer:insert_text(pos, dupTextArr[bufEndArr[i]])-- insert the duplicate string where the marker was using the updated "pos" variable
+          buffer:insert_text(pos, bufTextArr[bufEndArr[i]])-- insert the duplicate string where the marker was using the updated "pos" variable
 
           if i == #bufEndArr then
             -- reset all of this for the next use of this function
@@ -589,11 +590,13 @@ end
 keys['ctrl+kp4'] = fnd_mrk
 
 -- add/remove block comment
+local comMrk = 'Ø' .. 'ד'
 local function blok_commnt()
   local mov = 0
 
   if len > 0 then
     -- add the last selected values
+    bufTextArr[bufEnd] = subStr
     table.insert(bufStartArr, bufStart)
     table.insert(bufEndArr, bufEnd)
   end
@@ -602,34 +605,49 @@ local function blok_commnt()
   table.sort(bufStartArr)
   table.sort(bufEndArr)
 
-	-- get selected text
-	local sel_text = buffer.get_sel_text()
-	-- only if or not block comment
-	if string.find(sel_text, "/[*]") == nil and string.find(sel_text, "[*]/") == nil then
-    if #bufStartArr > 0 then
-      for i=1, #bufStartArr do
-        if i ~= 1 then mov = mov + 4 end
-
-        buffer:insert_text(bufStartArr[i] + mov, '/*')
-        buffer:insert_text(bufEndArr[i] + 2 + mov, '*/')
+  if #bufStartArr > 0 then
+    for i=1, #bufStartArr do
+      if i ~= 1 then
+        mov = mov + #comMrk
+        buffer:goto_pos(bufStartArr[i] + mov)
       end
-    elseif #bufStartArr == 0 then
-      buffer:insert_text(buffer.current_pos, '/*  */')
-      buffer:set_empty_selection(buffer.current_pos + 3)
+      if i == 1 then
+        buffer:goto_pos(bufStartArr[i])
+      end
+
+      buffer.undo_collection = false
+
+      buffer:insert_text(buffer.current_pos, comMrk)
+
+      if i == #bufStartArr then
+        for i=1, #bufStartArr do
+          local pos = buffer:search_next(buffer.FIND_REGEXP, comMrk)
+
+          buffer.undo_collection = false
+
+          buffer:delete_range(pos, #comMrk)
+
+          -- only if or not block comment
+          if string.find(bufTextArr[bufEndArr[i]],"/[*]") == nil and string.find(bufTextArr[bufEndArr[i]], "[*]/") == nil then
+            buffer.undo_collection = true
+            buffer:insert_text(pos, '/*')
+            buffer:insert_text(pos + #bufTextArr[bufEndArr[i]] + #'*/', '*/')
+            buffer.undo_collection = false
+          elseif string.find(bufTextArr[bufEndArr[i]], "/[*]") ~= nil and string.find(bufTextArr[bufEndArr[i]], "[*]/") ~= nil then
+            local newText = bufTextArr[bufEndArr[i]]:gsub("/[*]", "")
+            newText = newText:gsub("[*]/", "")
+            buffer:set_target_range(pos, pos + #bufTextArr[bufEndArr[i]])
+            buffer.undo_collection = true
+            buffer:replace_target(newText)
+            buffer.undo_collection = false
+          end
+        end
+      end
     end
-  -- remove block comment
-	elseif string.find(sel_text, "/[*]") ~= nil and string.find(sel_text, "[*]/") ~= nil then
-    local newText = sel_text:gsub("/[*]", "")
-    newText = newText:gsub("[*]/", "")
-
-    buffer:set_target_range(buffer.selection_start, buffer.selection_end)
-    buffer:replace_target(newText)
-	end
-
-  --active data collection for "local function dup()" needs to be cleared here
-  dupTextArr = {}
-  dupBufEndArr = {}
-  collectgarbage()
+  elseif #bufEndArr == 0 then
+    buffer:insert_text(buffer.current_pos, '/*  */')
+    buffer:set_empty_selection(buffer.current_pos + 3)
+  end
 end
 keys['ctrl+kp5'] = blok_commnt
 
