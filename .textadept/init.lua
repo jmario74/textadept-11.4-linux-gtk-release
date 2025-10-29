@@ -311,7 +311,7 @@ end
 events.connect(events.UPDATE_UI,word_wrap_caret)
 
 -- Duplicate multi-line/selection
-local mrk = 'ǻ' .. '⧞'-- separated so when using multi-line duplicate on this file
+local mrk = '§' .. '█'-- separated so when using multi-line duplicate on this file
 local function dup()
   local onDup = 0
   local dupMov = 0
@@ -589,7 +589,7 @@ end
 keys['ctrl+kp4'] = fnd_mrk
 
 -- add/remove block comment
-local comMrk = 'Ø' .. 'ד'
+local comMrk = '█' .. '§'
 local function blok_commnt()
   local mov = 0
 
