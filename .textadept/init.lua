@@ -24,7 +24,7 @@ asterisk title comment = ctrl+kp6
 hash title comment = ctrl+kp7
 toggle all = ctrl+esc
 command = ctrl+e
-language comment = ctrl+/
+code comment = ctrl+/
 rectangular select = alt+left mouse button
 preferences = ctrl+p
 ]]
