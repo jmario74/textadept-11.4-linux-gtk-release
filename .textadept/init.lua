@@ -256,6 +256,7 @@ end)
 events.connect(events.UPDATE_UI, function(updated)
   if not (updated & buffer.UPDATE_CONTENT) then end
   if selText == '' then
+    buffer.undo_collection = true
     subStr = ''
     bufStart = 0
     bufEnd = 0
