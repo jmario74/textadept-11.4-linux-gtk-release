@@ -66,25 +66,6 @@ events.connect(events.KEYPRESS, function(key)
 end)
 ]]
 
--- Display file path in status bar if OS is set to hide title bar of apps
-keys.KEYSYMS[65505] = 'oink'-- shift key
-local fileName = buffer.filename
-local function statusbar_filename()
-	-- indicate if file has unsaved changes
-	if buffer.modify and buffer.filename then
-		fileName = '~' .. buffer.filename
-	else
-		fileName = buffer.filename
-	end
-	ui.statusbar_text = fileName
-end
-events.connect(events.UPDATE_UI,statusbar_filename)
-events.connect(events.FILE_AFTER_SAVE,statusbar_filename)
-events.connect(events.FOCUS,statusbar_filename)
-keys['oink'] = statusbar_filename
-keys['ctrl+oink'] = statusbar_filename
-keys['esc'] = statusbar_filename
-
 -- when there is no more undo and still being pressed prevent the status bar text from getting cleared
 local function custom_undo()
 	buffer.undo()
@@ -252,20 +233,43 @@ events.connect(events.UPDATE_UI, function(updated)
   --ui.statusbar_text = #bufStartArr
 end)
 
--- runs when there is no highlighted text
-events.connect(events.UPDATE_UI, function(updated)
+-- Display file path in status bar if OS is set to hide title bar of apps
+keys.KEYSYMS[65505] = 'oink'-- shift key
+local fileName = buffer.filename
+local function statusbar_filename()
+	-- indicate if file has unsaved changes
+	if buffer.modify and buffer.filename then
+		fileName = '~' .. buffer.filename
+	else
+		fileName = buffer.filename
+	end
+	ui.statusbar_text = fileName
+
+  -- runs when there is no highlighted text
   if selText == '' then
-    buffer.undo_collection = true
     subStr = ''
     bufStart = 0
     bufEnd = 0
-    textArr = {}
-    bufStartArr = {}
-    bufEndArr = {}
-    bufTextArr = {}
-    collectgarbage()
+    for k in pairs (textArr) do
+      textArr [k] = nil
+    end
+    for k in pairs (bufStartArr) do
+      bufStartArr [k] = nil
+    end
+    for k in pairs (bufEndArr) do
+      bufEndArr [k] = nil
+    end
+    for k in pairs (bufTextArr) do
+      bufTextArr [k] = nil
+    end
   end
-end)
+end
+events.connect(events.UPDATE_UI,statusbar_filename)
+events.connect(events.FILE_AFTER_SAVE,statusbar_filename)
+events.connect(events.FOCUS,statusbar_filename)
+keys['oink'] = statusbar_filename
+keys['ctrl+oink'] = statusbar_filename
+keys['esc'] = statusbar_filename
 
 -- Copy file path to clipboard
 local function copy_file_path()
