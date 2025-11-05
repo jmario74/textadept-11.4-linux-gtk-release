@@ -336,7 +336,7 @@ local function dup()
   if onDup ~= 0 then
     for i=1, #bufEndArr do
       if i ~= 1 then
-        -- the markers take up space and will move the postitions in the document, except for the first one
+        -- the markers take up space and will move the positions in the document, except for the first one
         dupMov = dupMov + #mrk
         buffer:goto_pos(bufEndArr[i] + dupMov)
       end
