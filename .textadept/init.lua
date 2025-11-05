@@ -66,37 +66,6 @@ events.connect(events.KEYPRESS, function(key)
 end)
 ]]
 
--- when there is no more undo and still being pressed prevent the status bar text from getting cleared
-local function custom_undo()
-	buffer.undo()
-	ui.statusbar_text = fileName
-end
-keys['ctrl+z'] = custom_undo
-
--- when there is no more redo and still being pressed prevent the status bar text from getting cleared
-local function custom_redo()
-	buffer.redo()
-	ui.statusbar_text = fileName
-end
--- ctrl+(shift+z), (shift+z) = Z
-keys['ctrl+Z'] = custom_redo
-
--- custom find
-keys['ctrl+f'] = function()
-	ui.find.find_entry_text = buffer.get_sel_text()
-	local str = buffer.get_text()
-	local len = string.len(str)
-	buffer.indicator_clear_range(0,len)
-	ui.find.focus()
-	ui.find.find_next()
-	ui.find.find_prev()
-
-  ui.statusbar_text = fileName
-end
-ui.find.highlight_all_matches = true
-view.indic_fore[ui.find.INDIC_FIND] = white
-view.indic_alpha[ui.find.INDIC_FIND] = 0
-
 -- color selection
 local function setSelectnColor()
 	view.sel_alpha = 30
@@ -271,6 +240,37 @@ keys['oink'] = statusbar_filename
 keys['ctrl+oink'] = statusbar_filename
 keys['esc'] = statusbar_filename
 
+-- when there is no more undo and still being pressed prevent the status bar text from getting cleared
+local function custom_undo()
+	buffer.undo()
+	ui.statusbar_text = fileName
+end
+keys['ctrl+z'] = custom_undo
+
+-- when there is no more redo and still being pressed prevent the status bar text from getting cleared
+local function custom_redo()
+	buffer.redo()
+	ui.statusbar_text = fileName
+end
+-- ctrl+(shift+z), (shift+z) = Z
+keys['ctrl+Z'] = custom_redo
+
+-- custom find
+keys['ctrl+f'] = function()
+	ui.find.find_entry_text = buffer.get_sel_text()
+	local str = buffer.get_text()
+	local len = string.len(str)
+	buffer.indicator_clear_range(0,len)
+	ui.find.focus()
+	ui.find.find_next()
+	ui.find.find_prev()
+
+  ui.statusbar_text = fileName
+end
+ui.find.highlight_all_matches = true
+view.indic_fore[ui.find.INDIC_FIND] = white
+view.indic_alpha[ui.find.INDIC_FIND] = 0
+
 -- Copy file path to clipboard
 local function copy_file_path()
 	ui.clipboard_text = buffer.filename
@@ -355,9 +355,9 @@ local function dup()
         -- begin inserting the duplicate strings for each marker
         for i=1, #bufEndArr do
           -- find & replace the markers, this is so when the duplicate strings take up space the markers moves as well along with the positions; less code needed to get the moving positions
-          local pos = buffer:search_next(buffer.FIND_REGEXP, mrk)-- find the marker and get its position
-
-          buffer.undo_collection = false-- do not record this action in undo history
+          buffer.search_flags = buffer.FIND_REGEXP
+          buffer:target_whole_document()
+          local pos = buffer:search_in_target(mrk)-- find the marker and get its position
 
           buffer:goto_pos(pos)-- move caret to the back of the marker
 
@@ -629,7 +629,9 @@ local function blok_commnt()
         -- after all markers have been placed
         for i=1, #bufStartArr do
           -- look for the markers and use its position, the markers adjust position as inserts and removes are done on the document
-          local pos = buffer:search_next(buffer.FIND_REGEXP, comMrk)
+          buffer.search_flags = buffer.FIND_REGEXP
+          buffer:target_whole_document()
+          local pos = buffer:search_in_target(comMrk)
 
           -- do not record in undo history, marker delete action
           buffer.undo_collection = false
