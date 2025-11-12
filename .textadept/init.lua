@@ -336,7 +336,7 @@ local function dup()
   if onDup ~= 0 then
     for i=1, #bufEndArr do
       if i ~= 1 then
-        -- the markers take up space and will move the positions in the document, except for the first one
+        -- the markers take up space and will move the postitions in the document, except for the first one
         dupMov = dupMov + #mrk
         buffer:goto_pos(bufEndArr[i] + dupMov)
       end
@@ -662,6 +662,20 @@ local function blok_commnt()
 end
 keys['ctrl+kp5'] = blok_commnt
 
+-- insert asterisk title comment (*)
+local function astxCmnt()
+	buffer.add_text('/**')
+  buffer.new_line()
+  buffer.add_text('* ')
+  buffer.new_line()
+  buffer.add_text('* ')
+  buffer.new_line()
+  local endAtrx = '* */'
+  buffer.add_text(endAtrx)
+  buffer.goto_pos(buffer.current_pos - (#endAtrx + 4))
+end
+keys['ctrl+kp6'] = astxCmnt
+
 -- insert hash title comment (#)
 local function hshCmnt()
 	buffer.add_text('/* ################################################################################')
@@ -676,19 +690,12 @@ local function hshCmnt()
 end
 keys['ctrl+kp7'] = hshCmnt
 
--- insert asterisk title comment (*)
-local function astxCmnt()
-	buffer.add_text('/**')
-  buffer.new_line()
-  buffer.add_text('* ')
-  buffer.new_line()
-  buffer.add_text('* ')
-  buffer.new_line()
-  local endAtrx = '* */'
-  buffer.add_text(endAtrx)
-  buffer.goto_pos(buffer.current_pos - (#endAtrx + 4))
+-- insert special quotes (“”)
+local function specialQuotes()
+	buffer.add_text('“”')
+  buffer:char_left()
 end
-keys['ctrl+kp6'] = astxCmnt
+keys['ctrl+kp8'] = specialQuotes
 
 --[[ display brace match line number
 events.connect(events.UPDATE_UI, function(updated)
