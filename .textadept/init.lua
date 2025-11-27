@@ -81,6 +81,9 @@ events.connect(events.FILE_OPENED, setSelectnColor)
 -- Launch maximized
 ui.maximized = true
 
+-- Enabling this may have performance implications for buffers with long lines.
+view.scroll_width_tracking = false
+
 -- Multi-edit (ctrl+LM) click or esc to end
 buffer.multiple_selection = true
 buffer.additional_selection_typing = true
@@ -279,15 +282,16 @@ end
 keys['ctrl+alt+c'] = copy_file_path
 
 -- Override default word wrap
+view.end_at_last_line = false-- keeps word wrap from inadvertly scrolling at the bottom of the page
 local function word_wrap_override()
-	if view.wrap_mode == view.WRAP_NONE then
+  if view.wrap_mode == view.WRAP_NONE then
 		view.wrap_mode = view.WRAP_WORD
 	else
-		view.wrap_mode = view.WRAP_NONE
-		-- inadvertly scrolls when word wrap is toggled, switch out of the buffer then back while using "updateWrapModeState()" to keep the word wrap status and maintain the scroll position, when switching buffers the scroll position is maintained
-		view:goto_buffer(1)-- switch out of the buffer
-		view:goto_buffer(-1)-- then swicth back to the buffer
+    view.wrap_mode = view.WRAP_NONE
 	end
+  -- inadvertly scrolls when word wrap is toggled, switch out of the buffer then back while using "updateWrapModeState()" to keep the word wrap status and maintain the scroll position, when switching buffers the scroll position is maintained
+  view:goto_buffer(1)-- switch out of the buffer
+  view:goto_buffer(-1)-- then swicth back to the buffer
 end
 keys['ctrl+alt+\\'] = word_wrap_override
 
@@ -305,7 +309,7 @@ keys['ctrl+alt+/'] = custom_word_wrap
 -- Inadvertly scrolls when word wrap is toggled, keep caret in view on word wrap
 local function word_wrap_caret()
 	if onwrap then
-		local currCaretPos = buffer.current_pos
+    local currCaretPos = buffer.current_pos
 		buffer:home_wrap()
 		buffer.goto_pos(currCaretPos)
 		view:vertical_center_caret()
